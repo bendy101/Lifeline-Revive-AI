@@ -712,13 +712,13 @@ Lifeline_StartRevive = {
 
 	if (Lifeline_Revive_debug) then {
 		if (_medic getVariable ["Lifeline_ExitTravel", false] == false && _exit == false) then {
-				diag_log format ["|%3|%4|++++ YELLOW MARKER ++++ [0632] Lifeline_Cancel: %5'", _incap, _medic,name _incap,name _medic];
+				diag_log format ["|%1|%2|++++ YELLOW MARKER ++++ [0632] '", name _incap,name _medic];
 				if (Lifeline_yellowmarker) then {
 					_yelmark = createVehicle ["Sign_Arrow_Yellow_F", _revivePos,[],0,"can_collide"];
 					_incap setVariable ["ymarker1", _yelmark, true]; 	
 				};
 		} else {
-				diag_log format ["|%3|%4|++++ BYPASS YELLOW MARKER ++++ [0640] Lifeline_Cancel: %5'", _incap, _medic,name _incap,name _medic];
+				diag_log format ["|%1|%2|++++ BYPASS YELLOW MARKER ++++ [0640] '", name _incap,name _medic];
 		};
 	};
 

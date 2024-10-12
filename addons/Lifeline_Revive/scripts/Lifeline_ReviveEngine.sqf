@@ -161,6 +161,9 @@ if (isServer) then {
 
 		// SIDE	
 		if (Lifeline_Scope == 2) then {Lifeline_All_Units = allunits select {(side (group _x) == Lifeline_Side) && simulationEnabled _x && rating _x > -2000}};
+		// if (Lifeline_Scope == 2) then {Lifeline_All_Units = allunits select {(side (group _x) == Lifeline_Side) && simulationEnabled _x && rating _x > -2000 && ((captive _x == false && _x getVariable ["ReviveInProgress",0] == 0) || (_x getVariable ["ReviveInProgress",0] in [1,2,3]))}};
+		// if (Lifeline_Scope == 2) then {Lifeline_All_Units = allunits select {simulationEnabled _x && rating _x > -2000}}; // TEST FOR OPFOR
+
 
 		// ALL PLAYABLE (SLOTS)
 		if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {(side (group _x) == Lifeline_Side) && simulationEnabled _x  && (_x in playableUnits) && rating _x > -2000}};
@@ -423,12 +426,12 @@ if (isServer) then {
 
 				// ONLY ACE . Some missions have a script that inflicts vanilla damage that bypasses ACE medical, such as radiation. 
 				// This means with ACE medical you cannot heal and are stuck limping.  This will give option to fix.
-				if (Lifeline_RevMethod == 3 && isPlayer _x && (_x getHit "legs") >= 0.5 && !(_x in Lifeline_incapacitated)) then { 
+			/* 	if (Lifeline_RevMethod == 3 && isPlayer _x && (_x getHit "legs") >= 0.5 && !(_x in Lifeline_incapacitated)) then { 
 					if  (!(_x getVariable ["fixdamagebug",false]) || count (actionIDs _x) == 0) then {
 							_x setVariable ["fixdamagebug",true,true];
 							_x addAction ["<t color='#00FF0A'>vanilla damage fix</t>", {params ["_x"]; _x setVariable ["fixdamagebug",nil,true]; _x setDamage 0; _x removeAction (_this select 2)}, nil, 1, false];
 					};
-				};	
+				};	 */
 
 				if (Lifeline_Revive_debug) then {				
 					[_x] call Lifeline_debug_unit_states;
@@ -436,14 +439,18 @@ if (isServer) then {
 
 				// ========================= CROUCH SCRIPT. MAKE UNIT CROUCH WHEN STANDING AND IDLE. MORE IMMERSIVE. (ONLY IN "AWARE" BEHAVIOUR MODE) ============================
 
-				if (Lifeline_Idle_Crouch && _x getVariable ["ReviveInProgress",0] in [0,1]) then {
-					if (speed _x <= Lifeline_Idle_Crouch_Speed && stance _x == "STAND" && _crouchtrig == false && behaviour _x == "AWARE") then {
+				if (Lifeline_Idle_Crouch) then {
+					if (speed _x <= Lifeline_Idle_Crouch_Speed && stance _x == "STAND" && _crouchtrig == false && behaviour _x == "AWARE" && _x getVariable ["ReviveInProgress",0] == 0) then {
 						_crouchtrig = true; 
-					   _x setUnitPos "MIDDLE"; 
+					   _x setUnitPos "MIDDLE";
+					   diag_log format ["%1 | Set to crouch", name _x];
 					};
 					if ((speed _x > Lifeline_Idle_Crouch_Speed && _crouchtrig == true) || behaviour _x != "AWARE") then {
 						_crouchtrig = false;
-						_x setUnitPos "AUTO";
+						diag_log format ["%1 | Return to previous stance", name _x];
+						if (unitPos _x != "DOWN") then {
+							_x setUnitPos "AUTO";
+						};
 					}; 
 					if (speed _x == 0 && _crouchtrig == true && (behaviour _x == "COMBAT" || behaviour _x == "STEALTH" || (isPlayer (leader group _x) && stance (leader group _x) == "PRONE" && behaviour _x == "AWARE"))) then {
 						_crouchtrig = false;
@@ -784,6 +791,7 @@ if (isServer) then {
 					&& (_x getVariable ["LifelinePairTimeOut", 0]) == 0
 					&& (lifestate _x != "INCAPACITATED")
 					&& _x getVariable ["Lifeline_ExitTravel", false] == false
+					&& (side (group _x) == side (group _incap)) // TEST FOR OPFOR
 				) then {
 					Lifeline_medics2choose pushBackUnique _x;
 				};

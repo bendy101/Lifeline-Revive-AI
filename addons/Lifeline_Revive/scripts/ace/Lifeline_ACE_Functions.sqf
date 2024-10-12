@@ -928,6 +928,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 			};
 
 			[_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+			sleep 3; //just added
 
 		}; 
 
