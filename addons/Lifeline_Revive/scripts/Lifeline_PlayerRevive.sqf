@@ -2,7 +2,7 @@
 
 	params ["_player","_actionId"];
 
-
+	if (captive _player) then {_player setVariable ["Lifeline_Captive",true,true]} else {_player setVariable ["Lifeline_Captive",false,true]}; //2025
 
 	_exit = false;
 	_Lifeline_AssignedMedic_AI = objNull;
@@ -14,37 +14,36 @@
 	[_incap, _player] remoteExecCall ["disableCollisionWith", 0, _incap];
 	_vcrew = [];
 
-
 	if (Lifeline_RevMethod == 2 && Lifeline_BandageLimit > 1) then {
 		_damagesubtract = _incap getVariable ["damagesubstr",0];
 		_bandages = _incap getVariable ["num_bandages",0];
 		_unitwounds =  _incap getVariable ["unitwounds",[]]; // important for deleting from array
 	};
 
+	_captive = _player getVariable ["Lifeline_Captive", false];//2025
 
-	if (_bandages == 0) exitWith {
+	if (_bandages == 0) exitWith {		
 		[_player, true] remoteExec ["allowDamage",_player];
-		[_player, false] remoteExec ["setCaptive",_player]; 
+		// [_player, false] remoteExec ["setCaptive",_player]; 
+		[_player, _captive] remoteExec ["setCaptive",_player]; 
 		// _player setcaptive false;_player allowDamage true; 
 	};
-
 
 	if (Lifeline_RevMethod == 2 && !(_incap getVariable ["Lifeline_Down",false])) exitWith {
 		[_player, true] remoteExec ["allowDamage",_player];
-		[_player, false] remoteExec ["setCaptive",_player]; 
+		// [_player, false] remoteExec ["setCaptive",_player]; 
+		[_player, _captive] remoteExec ["setCaptive",_player]; 
 		// _player setcaptive false;_player allowDamage true; 
 	};
-
 
 	if (_bandages == 0 or (lifestate _incap !="INCAPACITATED")) exitWith {
 		[_player, true] remoteExec ["allowDamage",_player];
-		[_player, false] remoteExec ["setCaptive",_player]; 
+		// [_player, false] remoteExec ["setCaptive",_player]; 
+		[_player, _captive] remoteExec ["setCaptive",_player]; 
 		// _player setcaptive false;_player allowDamage true; 
 	};
 
-
 	_incap setVariable ["Lifeline_canceltimer",true,true]; 
-
 
 	//ADD MORE TIMER. added to increase revive time limit on each loop pass (made to also work with old versions)
 	_bleedoutincap = (_incap getvariable "LifelineBleedOutTime");
@@ -62,7 +61,6 @@
 		[[_incap,_actionId],{params ["_incap","_actionId"];_incap setUserActionText [_actionId, ""];}] remoteExec ["call", _incap, true];
 	};
 
-
 	// Unassign vehicle crew to prevent them getting back in after revive (reset fnc will conditionally reassign veh and allow getin)
 	if (!isnull assignedVehicle _incap) then {
 		_vehicle =  (assignedVehicle _incap);
@@ -70,8 +68,6 @@
 		// Unassign vehicle crew to prevent them getting back in after revive (reset fnc will conditionally reassign veh and allow getin)
 		{unassignVehicle _x; [_x] allowGetIn false;} forEach _vcrew;
 	};
-
-
 
 	if (lifestate _incap == "INCAPACITATED") then {
 		// {Lifeline_Process pushback _x} foreach [_incap, _player];
@@ -120,7 +116,8 @@
 			_bandages = _incap getVariable ["num_bandages",0];
 
 			if (_bandages == 0 or (lifestate _incap !="INCAPACITATED")) exitWith {
-				_player setcaptive false;  
+				// _player setcaptive false;  
+				_player setcaptive _captive;  
 				_player allowDamage true; 
 				_exit = true;
 			};
@@ -159,7 +156,8 @@
 		};
 
 		if (_bandages > 1) then {
-			_player setcaptive false; 
+			// _player setcaptive false; 
+			_player setcaptive _captive; 
 		};
 		// ============ WAKE UP, FINISHED
 		// if (damage _incap <= 0.2) then { 
@@ -181,10 +179,12 @@
 			[_incap] spawn {
 			params ["_incap"];	
 				sleep 5;
+				_captivei = _incap getVariable ["Lifeline_Captive", false];
 				// _incap setCaptive false;	
 				// _incap allowdamage true; 
 				[_incap, true] remoteExec ["allowDamage",_incap];
-				[_incap, false] remoteExec ["setCaptive",_incap]; 	
+				// [_incap, false] remoteExec ["setCaptive",_incap]; 	
+				[_incap, _captivei] remoteExec ["setCaptive",_incap]; 	
 			};
 
 			//newline
@@ -208,7 +208,6 @@
 		};	
 	}; // end lifestate incap == "INCAPACITATED"
 
-
 	// if (damage _incap <= 0.2) then {
 	if (_bandages <= 0  || Lifeline_RevMethod == 1 ||  Lifeline_BandageLimit == 1) then { 
 
@@ -216,7 +215,6 @@
 		if (alive _incap && ((animationState _incap find "unconscious" == 0 && animationState _incap != "unconsciousrevivedefault" && animationState _incap != "unconsciousoutprone") || animationState _incap == "unconsciousrevivedefault")) then {
 			[_incap, "unconsciousrevivedefault"] remoteExec ["SwitchMove", 0];
 		};
-
 
 		// Not sure if this is needed. 
 		if (rating _player <0) then {_player addrating ((abs rating _player)+1)};
@@ -249,7 +247,6 @@
 		};
 	};	
 
-
 	Lifeline_Process = Lifeline_Process - [_player]; 
 	publicVariable "Lifeline_Process"; 
 
@@ -266,18 +263,17 @@
 		};
 	} foreach units group _player;
 
-
-	[_player,_incap] spawn {
-		params ["_player","_incap"];	
+	[_player,_incap,_captive] spawn {
+		params ["_player","_incap","_captive"];	
 		sleep 5;
 		if (_player getVariable ["ReviveInProgress",0] != 2) then { 
 		// _player allowdamage true; 
 		// _player setCaptive false; 
 		[_player, true] remoteExec ["allowDamage",_player]; 
-		[_player, false] remoteExec ["setCaptive",_player];	 
+		// [_player, false] remoteExec ["setCaptive",_player];	 
+		[_player, _captive] remoteExec ["setCaptive",_player];	 
 		};
 	};
-
 
 	//split Lifeline_Process up now
 
@@ -291,5 +287,4 @@
 	_player setVariable ["ReviveInProgress",0,true]; 
 	// _player removeEventHandler ["AnimDone", _animdoneID];
 	// _player removeEventHandler ["AnimStateChanged", _AnimStateChangedID];
-
 

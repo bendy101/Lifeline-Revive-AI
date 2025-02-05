@@ -185,5 +185,4 @@ Lifeline_hotwire_addvehicles = {
 
 };
 
-
 [] call Lifeline_hotwire_addvehicles;

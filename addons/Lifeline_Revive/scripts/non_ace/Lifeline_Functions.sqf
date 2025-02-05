@@ -12,6 +12,8 @@ diag_log "======================================================================
 Lifeline_Incapped = {
 	params ["_unit","_damage","_non_handler"];
 	// _non_handler is a boolean. if true it means incapped function was called NOT through the damage handler.
+
+	if (captive _unit) then {_unit setVariable ["Lifeline_Captive",true,true]} else {_unit setVariable ["Lifeline_Captive",false,true]}; //2025
 	_unit setCaptive true;	
 
 	Lifeline_incapacitated pushBackUnique _unit;
@@ -71,7 +73,6 @@ Lifeline_Incapped = {
 			};	
 			[_unit] call Lifeline_autoRecover_check; //roll the dice to see if autorevive should be set to 'true'.
 
-
 			// moved here, start countdown display, or distance medic.
 			if ((Lifeline_HUD_distance == true || Lifeline_cntdwn_disply != 0) && isPlayer _unit) then {
 				_seconds = Lifeline_cntdwn_disply;
@@ -90,8 +91,6 @@ Lifeline_Incapped = {
 	[_unit, _damage, _non_handler] spawn {
 		params ["_unit","_damage", "_non_handler"];	
 		sleep 5; 	
-
-
 
 		_randanim = "";
 
@@ -146,15 +145,11 @@ Lifeline_Incapped = {
 	// when reviving, chunks of damage are taken off each bandage, thus lessening the vanilla blood each time.
 };
 
-
-
 Lifeline_actionID = {
 	params ["_unit","_colour","_bandageno","_text"];
 	_actionId = _unit addAction [format ["<t size='%4' color='#%1'>%3       ..%2</t>",_colour,_bandageno,_text,Lifeline_textsize],{params ["_target", "_caller", "_actionId", "_arguments"]; [_caller,_actionId] execVM "Lifeline_Revive\scripts\Lifeline_PlayerRevive.sqf" ; },[],8,true,true,"","_this distance cursorObject < 2.2 && lifeState cursorObject == 'INCAPACITATED' && animationstate _this find 'medic' ==-1"];
 	_unit setVariable ["Lifeline_ActionMenuWounds",_actionId,true];
 };
-
-
 
 //================================================================================
 //==== BANDAGE NUMBER CALCULATION. PER BODY PART
@@ -162,15 +157,12 @@ Lifeline_actionID = {
 Lifeline_calcbandages = {
 	params ["_unit","_dmg_unit"];
 
-
 	// for instant death prevention, sometimes the allover damage is not updated.
 	if (_dmg_unit <= Lifeline_IncapThres) then {
 		// _dmg_unit = selectRandom [0.998,Lifeline_IncapThres + 0.05];
 		// _dmg_unit = Lifeline_IncapThres + 0.05;
 		_dmg_unit = 0.998;
 	};
-
-
 
 	//get damage from body parts for bandage distribution
 	_face = _unit getHitPointDamage "hitface";_neck = _unit getHitPointDamage "hitneck";_head = _unit getHitPointDamage "hithead";_pelvis = _unit getHitPointDamage "hitpelvis";_abdomen = _unit getHitPointDamage "hitabdomen";_diaphrm = _unit getHitPointDamage "hitdiaphragm";_chest = _unit getHitPointDamage "hitchest";_body = _unit getHitPointDamage "hitbody";_arms = _unit getHitPointDamage "hitarms";_hands = _unit getHitPointDamage "hithands";_legs = _unit getHitPointDamage "hitlegs";_incap = _unit getHitPointDamage "incapacitated"; 
@@ -209,7 +201,6 @@ Lifeline_calcbandages = {
 	if (_armsGHPD >= .998) then {_armsGHPD = 1};
 	if (_legsGHPD >= .998) then {_legsGHPD = 1};
 
-
 	//============================================================================================================
 
 	_bullethits = (_unit getVariable ["Lifeline_bullethits",0]); 
@@ -239,12 +230,10 @@ Lifeline_calcbandages = {
 	if (_bandage_no == 0) then {_bandage_no = 1};
 	if (_bandage_no > Lifeline_BandageLimit) then {_bandage_no = Lifeline_BandageLimit};
 
-
 	_damagesubstr = (_dmg_unit - _unc_range) / _bandage_no; //this calculates the amount of damage to substract each bandage. incap wakes up at 0.2, so only (current damage minus 0.2) divided by num of bandages
 	_damagesubstr = _damagesubstr + 0.000001; //added a tiny fraction - sometimes the calculation is a fraction off due to rounding errors. This fixes it.
 
 	//=========================================================================================
-
 
 	//if only arms / legs are hit and bandages calculated are more than bullet hits then reduce bandages to number of bullet hits.
 	if (_headGHPD < 0.998 && _torsoGHPD < 0.998 && _armlegswitch == false && ((_bandage_no > _bullethits && _bullethits > 0)) ) then { // better calculation. e.g. 5 shots sometimes only have 1 bandage, but its still minor damage.
@@ -348,17 +337,13 @@ Lifeline_calcbandages = {
 	[_bandg_total,_per_bandage,_damagesubstr,_bandg_total_array]
 };
 
-
-
 //============================================================================================
 //==== INJURY NAMES AND COLOUR, ON SEVERITY SCALE 1-4 (called _quads. 4 is highest damage)
 
 Lifeline_bandage_text = {
 	params ["_bandage_no", "_unit", "_bandg_total_array", "_cpr", "_non_handler"];
 
-
 	_pallet04 = ["F94545","F97166","F99E86","F9CAA7"];
-
 
 	_colour = _pallet04; //just replace variable here
 
@@ -485,8 +470,6 @@ Lifeline_bandage_text = {
 	_unit setVariable ["unitwounds", _unitwounds, true];
 };
 
-
-
 Lifeline_bandage_addAction = {
 	params ["_unit","_non_handler"];
 
@@ -548,10 +531,7 @@ Lifeline_bandage_addAction = {
 
 	[_unit] call Lifeline_text_addAction;
 
-
 };
-
-
 
 Lifeline_text_addAction = {
 	params["_unit"];
@@ -565,7 +545,6 @@ Lifeline_text_addAction = {
 	if (_text != "CRITICAL: Perform CPR") then {
 	_text = format ["%1       ..%2", _text, _bandageno];
 	};
-
 
 		// === OLD METHOD IF. Using "" to replace action menu when not used.
 	if !(_unit getVariable ["Lifeline_RevActionAdded",false]) then { 
@@ -584,8 +563,6 @@ Lifeline_text_addAction = {
 		};		
 };
 
-
-
 // this is a powercurve over incap threshold. Can change the curve to affect number of bandages. 
 // _powerValue = 1 mean no effect (straight line).  1.1 - 1.9 is recomended range for _powerValue
 powerCurve = {
@@ -603,8 +580,6 @@ powerCurve = {
 	}; 
 	_processedDamage
 };
-
-
 
 Lifeline_Medic_Anim_and_Revive = {
 		params ["_incap","_medic","_EnemyCloseBy","_voice","_B"];
@@ -648,7 +623,6 @@ Lifeline_Medic_Anim_and_Revive = {
 					_unitwounds =  _incap getVariable ["unitwounds",[]];
 					// [format ["%2 | TEXT | UNIT WOUND ARRAY %1 count _unitwounds %3 _bandages %4 ====[851]", _unitwounds, name _incap, count _unitwounds, _bandages]] remoteExec ["diag_log", 2];
 
-
 					//=====================================================================================================
 
 					_switch = 0;
@@ -663,7 +637,6 @@ Lifeline_Medic_Anim_and_Revive = {
 					_part_yo = "";
 					// _firstpass = true;
 					_crouchreviveanim = selectRandom [0,1]; // this is to randomize between two different crouch revive animations.
-
 
 					// ================= BANDAGE ACTION LOOP ===============================================================
 					_firstimetrigg = false; // TEMP FOR NEW ANIMATION
@@ -692,7 +665,6 @@ Lifeline_Medic_Anim_and_Revive = {
 						_bleedoutincap = (_incap getvariable _bleedoutbaby);
 						_incap setVariable [_bleedoutbaby, _bleedoutincap + 30, true];
 						//======================================================================================================================================================================		
-
 
 						if (_bandages > 0 && Lifeline_RevMethod == 2 && Lifeline_BandageLimit > 1) then {
 
@@ -775,7 +747,6 @@ Lifeline_Medic_Anim_and_Revive = {
 							}; // end if not incapped
 
 						}; // end if RevMethod == 2
-
 
 						//encouragment or "and again" voice sample when body part is repeated for Lifeline_RevMethod 2. Repeated audio samples are not cool. 
 						// if (Lifeline_RevMethod == 2) then {
@@ -866,7 +837,6 @@ Lifeline_Medic_Anim_and_Revive = {
 								};	//if (!isNull _EnemyCloseBy) then
 						}; // if != CPR
 
-
 						if (_part_yo == "CPR") then {
 							if (lifestate _incap == "INCAPACITATED" && lifestate _medic != "INCAPACITATED" && alive _medic) then {
 								// _medic setdir (_medic getDir _incap)+5; //SETDIRTEMP
@@ -943,9 +913,7 @@ Lifeline_Medic_Anim_and_Revive = {
 							sleep 2;
 						};
 
-
 						// }; // end if (lifestate _medic != "INCAPACITATED" etc
-
 
 						_newdamage = damage _incap - _damagesubtract;
 						if (_newdamage < 0.2) then {
@@ -961,7 +929,6 @@ Lifeline_Medic_Anim_and_Revive = {
 						// _unitwounds = _unitwounds - [(_unitwounds select (_bandages))]; // WRONGGG
 						_unitwounds deleteAt _bandages;
 						_incap setVariable ["unitwounds",_unitwounds,true];
-
 
 					}; // end while ================================================ END BANDAGE LOOP ========================================
 
@@ -1004,21 +971,21 @@ Lifeline_Medic_Anim_and_Revive = {
 
 			_Lifeline_Down = (_incap getVariable ["Lifeline_Down",false]);
 
+				_captive = _incap getVariable ["Lifeline_Captive", false];
 				if !(local _incap) then {
 					[_incap, true] remoteExec ["allowDamage",_incap];
-					[_incap, false] remoteExec ["setCaptive",_incap];	
+					// [_incap, false] remoteExec ["setCaptive",_incap];	
+					[_incap, _captive] remoteExec ["setCaptive",_incap];	
 				} else {
 					_incap allowDamage true;
-					_incap setCaptive false;		
+					// _incap setCaptive false;		
+					_incap setCaptive _captive;		
 				};
-
 
 		};
 		// waitUntil {lifestate _incap != "INCAPACITATED"}; // if incap is remote player, sometimes there is a delay. Wait until data catches up. // DO NOT USE. 
 _exit
 };
-
-
 
 //new animation for bandage loop without pulling out weapon after each animation
 Lifeline_Anim_Bandage_new = {
@@ -1079,10 +1046,6 @@ Lifeline_Anim_Bandage_new = {
 	};														
 };
 
-
-
-
-
 Lifeline_autoRecover_check = {
 	params ["_unit"];				
 	_percentchance = Lifeline_autoRecover;
@@ -1099,8 +1062,6 @@ Lifeline_autoRecover_check = {
 		false
 	};
 };
-
-
 
 Lifeline_countdown_timer2 = {
 	params ["_unit","_seconds"];
@@ -1159,9 +1120,6 @@ Lifeline_countdown_timer2 = {
 	_unit setVariable ["Lifeline_countdown_start",false,true];
 };
 
-
-
-
 Lifeline_reset_variables = {
 	params ["_unit"];
 	_unit setVariable ["Lifeline_Down",false,true];// for Revive Method 2
@@ -1179,15 +1137,11 @@ Lifeline_reset_variables = {
 	};
 };
 
-
-
 Lifeline_timer = {
 	params ["_seconds"];
 	sleep _seconds;
 	true
 };
-
-
 
 // work in progress. Finish later.
 /*
@@ -1201,9 +1155,4 @@ Lifeline_radio_how_copy = {
 	_medic groupRadio (_voice+_RPBrand); 
 };
 */
-
-
-
-
-
 

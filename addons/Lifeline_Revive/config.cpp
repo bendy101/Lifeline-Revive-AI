@@ -19,14 +19,11 @@ class CfgPatches
 
 ReviveMode = 0;
 
-
 class Extended_PreInit_EventHandlers {
     class My_pre_init_LifeLine {
         init = "call compile preprocessFileLineNumbers '\Lifeline_Revive\XEH_preInit.sqf'";
     };
 };
-
-
 
 class Extended_PostInit_EventHandlers
 {
@@ -42,14 +39,11 @@ class cfgMods
 	timepacked="1505183013";
 };
 
-
 class CfgSounds {
 	sounds[] = {};
 	sound = [];
 
 	#include "\Lifeline_Revive\sound\Lifeline_Sound.hpp"
 
-
 };
-
 

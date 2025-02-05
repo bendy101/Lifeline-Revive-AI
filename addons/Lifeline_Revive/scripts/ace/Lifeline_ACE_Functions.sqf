@@ -12,6 +12,9 @@ diag_log "======================================================================
 		if (_unit in Lifeline_All_Units)	then {
 
 			if (_status == true) then {
+
+				if (captive _unit) then {_unit setVariable ["Lifeline_Captive",true,true]} else {_unit setVariable ["Lifeline_Captive",false,true]}; //2025
+
 				_unit setVariable ["Lifeline_selfheal_progss",false,true]; //clear var if it was in middle of self healing
 
 				// ================= added the killed event handler
@@ -79,9 +82,6 @@ diag_log "======================================================================
 		};	//	if (_unit in Lifeline_All_Units)					
 }] call CBA_fnc_addEventHandler; 
 
-
-
-
 Lifeline_ACE_Anims_Voice = {
 params ["_incap", "_medic","_EnemyCloseBy","_voice","_switch", "_againswitch", "_encourage","_enc_count"];
 
@@ -128,8 +128,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice","_switch", "_againswitch", "
 
 };
 
-
-
 Lifeline_ACE_Revive = {
 params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 		_switch = 0;
@@ -175,7 +173,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 			[_medic, [_voice+"_pulse1", 20, 1, true]] remoteExec ["say3D", 0]; //softer
 		};
 
-
 		if (Lifeline_ACE_Bandage_Method == 1) then {		
 
 					// ================= BANDAGE ACTION LOOP ================
@@ -192,7 +189,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 					if (lifestate _incap != "INCAPACITATED") exitWith {};
 					if (lifestate _medic == "INCAPACITATED") exitWith {}; //with other players healing simultaneously, this can happen
-					if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+					//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+					if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
 					if ([_medic, _incap, _key1, "BasicBandage"] call ace_medical_treatment_fnc_canBandage) then {
 
@@ -203,7 +201,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 						if (oldACE == false) then {
 							_jsonStr = _incap call ace_medical_fnc_serializeState; 		
-							_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;  // 2nd arg will get native hashMaps
+							_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   // 2nd arg will get native hashMaps
 							_woundsHash = _jsonhash get "ace_medical_openwounds";
 							_countw = 0;									
 							{ 	
@@ -220,7 +218,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 						if (oldACE == true) then {	
 							 _jsonStr = _incap call ace_medical_fnc_serializeState; 		
-							 _json = [_jsonStr] call CBA_fnc_parseJSON;	
+							 _json = [_jsonStr] call CBA_fnc_parseJSON;	  
 							 _wounds = _json getVariable ["ace_medical_openwounds", false];
 							{
 								if (_x select 0 == 20 || _x select 0 == 21 || _x select 0 == 22 || _x select 0 == 80 || _x select 0 == 81 || _x select 0 == 82 ||  _x select 2 == 0 ) then {
@@ -230,7 +228,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 								};
 							} forEach _wounds;
 						};
-
 
 						//HINT	
 						if (isPlayer _incap && Lifeline_HUD_medical) then {
@@ -276,7 +273,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 						if (lifestate _incap != "INCAPACITATED") exitWith {};
 						if (lifestate _medic == "INCAPACITATED") exitWith {}; //with other players healing simultaneously, this can happen
 
-						if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+						//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+						if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
 						sleep 0.5;
 						// sleep 1;
@@ -324,17 +322,14 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 				}; //WHILE is Bleeding
 
-
 		}; // if (Lifeline_ACE_Bandage_Method == 1) then
-
-
 
 		if (Lifeline_ACE_Bandage_Method == 2) then {	
 
 			if (oldACE == false) then {
 
 				private _jsonStr = _incap call ace_medical_fnc_serializeState; 		
-				private _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;  // 2nd arg will get native hashMaps
+				private _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;    // 2nd arg will get native hashMaps
 				private _woundsHash = _jsonhash get "ace_medical_openwounds";
 				private _fractures = _jsonhash get "ace_medical_fractures";
 
@@ -369,10 +364,11 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 						};
 					}; //with other players healing simultaneously, this can happen
 
-					if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+					//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+					if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
 					 _jsonStr = _incap call ace_medical_fnc_serializeState; 		
-					 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;  // 2nd arg will get native hashMaps
+					 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;    // 2nd arg will get native hashMaps
 					 _woundsHash = _jsonhash get "ace_medical_openwounds";
 
 					 // delete wounds that have been done by a live player (wounds are not deleted, just a value changed to 0 )
@@ -403,8 +399,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 						};
 					} forEach _value1;
 
-
-
 					_notrepeat = "";
 
 					// if (count _value1 > 0) then {  // dont voice empty keys
@@ -430,10 +424,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 						};
 					};
 
-
 					// while {count _value1 > 0} do {	
 					while {count _bleedingwounds > 0} do {	
-
 
 						//encouragment or "and again" voice sample
 						_repeatrandom = selectRandom[1,2];
@@ -456,11 +448,12 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 							};
 						}; //with other players healing simultaneously, this can happen
 
-						if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+						//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+						if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
 						//ALL AT FRONT NOW
 						 _jsonStr = _incap call ace_medical_fnc_serializeState; 	
-						 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+						 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 						 _woundsHash = _jsonhash get "ace_medical_openwounds";				
 						// private _key1 = _x;    
 
@@ -501,7 +494,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 							};
 						} forEach _value1;
 
-
 						sleep 0.5;
 
 						// _value1 = _value1 - [_value1 select 0];
@@ -514,7 +506,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 						// [_incap, _newJsonStr] remoteExec ["fix_medical_fnc_deserializeState", _incap];
 
 						sleep 1;
-
 
 						//added to increase revive time limit on each loop pass
 						_timelimitincap = (_incap getvariable "LifelinePairTimeOut");
@@ -540,11 +531,10 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 			}; //============================ if not OLD ACE
 
-
 			if (oldACE == true) then {	
 
 					 _jsonStr = _incap call ace_medical_fnc_serializeState; 		
-					 _json = [_jsonStr] call CBA_fnc_parseJSON;	
+					 _json = [_jsonStr] call CBA_fnc_parseJSON;	  
 					 _wounds = _json getVariable ["ace_medical_openwounds", false];
 					 _fractures = _json getVariable ["ace_medical_fractures", false];					
 					_bleedingwounds = [];
@@ -563,7 +553,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 									_bleedingwounds = _bleedingwounds - [_bleedingwounds select 0];
 								};
 							} forEach _bleedingwounds;
-
 
 					_countf = 0;
 					{
@@ -623,7 +612,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 					while {count _reordered_wounds > 0} do {
 
 							_jsonStr = _incap call ace_medical_fnc_serializeState; 		
-							_json = [_jsonStr] call CBA_fnc_parseJSON;	
+							_json = [_jsonStr] call CBA_fnc_parseJSON;	  
 							_wounds = _json getVariable ["ace_medical_openwounds", false];
 							_bleedingwounds = [];
 							_bruises = [];
@@ -636,9 +625,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 									};
 								} forEach _wounds;
 
-
 							_reordered_wounds = _bleedingwounds;
-
 
 							{
 								if (_reordered_wounds select 0 select 2 == 0) then {
@@ -659,7 +646,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 									if (isPlayer _incap && Lifeline_hintsilent) then {[ "MEDIC DOWN" ] remoteExec ["hintsilent",_incap]};
 								};
 							};
-							if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+							//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+							if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
 							if (isPlayer _incap && Lifeline_HUD_medical) then {
 								_colour = "F9CAA7";
@@ -697,7 +685,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 								};
 							};
 
-
 							//encouragment or "and again" voice sample
 							_repeatrandom = selectRandom[1,2];
 							if (_bodypart == _notrepeat && _enc_count < 3 && _repeatrandom == 1) then { 
@@ -710,7 +697,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 							};
 
 							_notrepeat = _bodypart;
-
 
 							//added to increase revive time limit on each loop pass
 							_timelimitincap = (_incap getvariable "LifelinePairTimeOut");
@@ -744,11 +730,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 					}; // WHILE 
 
-
 			}; // OLD ACE
 		}; // if ACE revive method == 2
-
-
 
 		//checks to leave revive process
 		if (lifestate _incap != "INCAPACITATED") exitWith {};
@@ -757,24 +740,26 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 				if (isPlayer _incap && Lifeline_hintsilent) then {[ "MEDIC DOWN" ] remoteExec ["hintsilent",_incap]};
 			};
 		}; 
-		if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+
+		//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
+		if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 		// IV if needed
 		// ====================ADD BLOOD IF NEEDED
 		_json = [];
 		_bloodvolume = [];
 		if (oldACE == false) then {
 			 _jsonStr = _incap call ace_medical_fnc_serializeState; 
-			 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+			 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 			 _bloodvolume = _jsonhash get "ace_medical_bloodvolume";
 		} else {
 			 _jsonStr = _incap call ace_medical_fnc_serializeState;
-			 _json = [_jsonStr] call CBA_fnc_parseJSON;
+			 _json = [_jsonStr] call CBA_fnc_parseJSON;   
 			 _bloodvolume = _json getVariable ["ace_medical_bloodvolume", false];
 		};
 
 		_jsonStr = _incap call ace_medical_fnc_serializeState; 	
-		_json = [_jsonStr] call CBA_fnc_parseJSON;
-		_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+		_json = [_jsonStr] call CBA_fnc_parseJSON;   
+		_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 		_fractures = [];
 
 		if (oldACE == false) then {
@@ -797,7 +782,12 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 		if (_bloodvolume <= 5) then {
 			// [_medic, [_voice+"_giveblood1", 50, 1, true]] remoteExec ["say3D", 0];
 			[_medic, [_voice+"_giveblood1", 20, 1, true]] remoteExec ["say3D", 0];
-			[_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+			// [_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+		/* 	
+			if (aceversion >= 19) then {
+				_currentIV = _incap call ace_medical_fnc_getIVs;
+			}; */
+			[_incap, _medic] call Lifeline_IV_Blood; //update for 3.19 in 2025
 
 			if (_countf == 0) then { // if there are no fractures, then have anim for blood IV (usually blood can inject while fractures being fixed. Saves time)
 
@@ -857,8 +847,8 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 				//ALL AT FRONT NOW
 				_jsonStr = _incap call ace_medical_fnc_serializeState; 	
-				_json = [_jsonStr] call CBA_fnc_parseJSON;
-				_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+				_json = [_jsonStr] call CBA_fnc_parseJSON;   
+				_jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;    
 
 				if (oldACE == false) then {
 					_fractures = _jsonhash get "ace_medical_fractures";
@@ -893,7 +883,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 				_incap setVariable ["LifelinePairTimeOut", _timelimitincap + 10, true]; 
 				_medic setVariable ["LifelinePairTimeOut", _timelimitmedic + 10, true]; 
 
-
 				//============================ CALL ANIMATION ==============================
 				_animsvoice = [_incap, _medic,_EnemyCloseBy,_voice,_switch, _againswitch, _encourage,_enc_count] call Lifeline_ACE_Anims_Voice;
 				_switch = _animsvoice select 0;
@@ -905,17 +894,16 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 
 		} forEach _fractures;
 
-
 		if (lifestate _incap != "INCAPACITATED") exitWith {};
 
 		// ====== blood again if needed - not spawned to allow voice sample time to play
 		if (oldACE == false) then {
 				 _jsonStr = _incap call ace_medical_fnc_serializeState; 
-				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 				 _bloodvolume = _jsonhash get "ace_medical_bloodvolume";
 		} else {
 				 _jsonStr = _incap call ace_medical_fnc_serializeState;
-				 _json = [_jsonStr] call CBA_fnc_parseJSON;
+				 _json = [_jsonStr] call CBA_fnc_parseJSON;   
 				 _bloodvolume = _json getVariable ["ace_medical_bloodvolume", false];
 		};
 
@@ -926,8 +914,12 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 				_colour = "F9CAA7";
 				[format ["<t align='right' size='%2' color='#%1'>More Blood IV</t>",_colour, 0.5],((safeZoneW - 1) * 0.48),1.3,5,0,0,Lifelinetxt2Layer] remoteExec ["BIS_fnc_dynamicText",_incap];
 			};
-
-			[_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+			/* 
+			// [_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+			if (aceversion >= 19) then {
+				_currentIV = _incap call ace_medical_fnc_getIVs;
+			}; */
+			[_incap, _medic] call Lifeline_IV_Blood; //update for 3.19 in 2025
 			sleep 3; //just added
 
 		}; 
@@ -939,25 +931,30 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 			_bloodvolume = [];
 			if (oldACE == false) then {
 				 _jsonStr = _incap call ace_medical_fnc_serializeState; 
-				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 				 _bloodvolume = _jsonhash get "ace_medical_bloodvolume";
 			} else {
 				 _jsonStr = _incap call ace_medical_fnc_serializeState;
-				 _json = [_jsonStr] call CBA_fnc_parseJSON;
+				 _json = [_jsonStr] call CBA_fnc_parseJSON;   
 				 _bloodvolume = _json getVariable ["ace_medical_bloodvolume", false];
 			};
 			while {_bloodvolume <= 5} do {
 				sleep 5;
 				if (oldACE == false) then {
 					 _jsonStr = _incap call ace_medical_fnc_serializeState; 
-					 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+					 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 					 _bloodvolume = _jsonhash get "ace_medical_bloodvolume";
 				} else {
 					 _jsonStr = _incap call ace_medical_fnc_serializeState;
-					 _json = [_jsonStr] call CBA_fnc_parseJSON;
+					 _json = [_jsonStr] call CBA_fnc_parseJSON;   
 					 _bloodvolume = _json getVariable ["ace_medical_bloodvolume", false];
 				};
-				[_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+				// [_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+				/* 
+				if (aceversion >= 19) then {
+					_currentIV = _incap call ace_medical_fnc_getIVs;
+				}; */
+				[_incap, _medic] call Lifeline_IV_Blood; //update for 3.19 in 2025
 			}; 
 		};
 
@@ -985,7 +982,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 			_timelimitmedic = (_medic getvariable "LifelinePairTimeOut");
 			_incap setVariable ["LifelinePairTimeOut", _timelimitincap + 12, true]; 
 			_medic setVariable ["LifelinePairTimeOut", _timelimitmedic + 12, true]; 
-
 
 			if (isPlayer _incap && Lifeline_HUD_medical) then {
 				_colour = "F9CAA7";
@@ -1106,8 +1102,6 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 		};	
 };
 
-
-
 Lifeline_SelfHeal_ACE = {
 params ["_unit"];
 	if (alive _unit && lifestate _unit != "INCAPACITATED" && !isPlayer _unit) then {
@@ -1129,7 +1123,7 @@ params ["_unit"];
 
 				 _jsonStr = _unit call ace_medical_fnc_serializeState; 		
 				// private _json = [_jsonStr] call CBA_fnc_parseJSON;					
-				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;  // 2nd arg will get native hashMaps
+				 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;     // 2nd arg will get native hashMaps
 				 _woundsHash = _jsonhash get "ace_medical_openwounds";
 				 _fractures = _jsonhash get "ace_medical_fractures";
 				{
@@ -1142,7 +1136,6 @@ params ["_unit"];
 					while {count _value1 > 0} do {	
 
 						if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
-
 
 						if (_unit getVariable ["ReviveInProgress",0] in [1,2]) then {
 							_unit setVariable ["LifelinePairTimeOut", (_unit getvariable "LifelinePairTimeOut") + 5, true];
@@ -1171,11 +1164,10 @@ params ["_unit"];
 
 		}; //NEW ACE
 
-
 		if (oldACE == true) then {
 
 				 _jsonStr = _unit call ace_medical_fnc_serializeState; 		
-				 _json = [_jsonStr] call CBA_fnc_parseJSON;	
+				 _json = [_jsonStr] call CBA_fnc_parseJSON;	  
 				 _wounds = _json getVariable ["ace_medical_openwounds", false];
 				// private _fractures = _json get "ace_medical_fractures";
 				_EnemyCloseBy = [_unit] call Lifeline_EnemyCloseBy;
@@ -1214,28 +1206,25 @@ params ["_unit"];
 
 		}; //if (oldACE == true) then {
 
-
 		// ====================ADD BLOOD IF NEEDED
 		if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
 
 		if (oldACE == false) then {
 			 _jsonStr = _unit call ace_medical_fnc_serializeState; 
-			 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+			 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;   
 			 _bloodvolume = _jsonhash get "ace_medical_bloodvolume";
 		} else {
 			 _jsonStr = _unit call ace_medical_fnc_serializeState;
-			 _json = [_jsonStr] call CBA_fnc_parseJSON;
+			 _json = [_jsonStr] call CBA_fnc_parseJSON;   
 			 _bloodvolume = _json getVariable ["ace_medical_bloodvolume", false];
 		};
 
 		if (_bloodvolume <= 6) then {
-			// [_unit, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
-			[_unit, _unit, "RightArm", "BloodIV", objNull, "ACE_bloodIV"] call ace_medical_treatment_fnc_ivBag
-			// [_unit, "RightArm", "BloodIV"] call ace_medical_treatment_fnc_ivBagLocal;
+			// [_unit, _unit, "RightArm", "BloodIV", objNull, "ACE_bloodIV"] call ace_medical_treatment_fnc_ivBag;
+			[_unit] call Lifeline_Self_IV_Blood;
 			// sleep 10;
 		};
 		// test event handler for blood IV
-
 
 		// =====================ADD MORPHINE	
 		if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
@@ -1252,15 +1241,14 @@ params ["_unit"];
 
 		 _fractures = [];
 		 _jsonStr = _unit call ace_medical_fnc_serializeState; 	
-		  _json = [_jsonStr] call CBA_fnc_parseJSON;	
-		 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON; 
+		  _json = [_jsonStr] call CBA_fnc_parseJSON;	  
+		 _jsonhash = [_jsonStr, 2] call CBA_fnc_parseJSON;    
 
 		if (oldACE == false) then {	
 			_fractures = _jsonhash get "ace_medical_fractures";
 		} else {
 			_fractures = _json getVariable ["ace_medical_fractures", false];
 		};
-
 
 		 //========== FRACTURE LOOP
 		if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
@@ -1305,7 +1293,6 @@ params ["_unit"];
 	// _unit setVariable ["Lifeline_selfheal_progss",false,true]; // in original Lifeline_SelfHeal now
 }; // end function
 
-
 Lifeline_countdown_timerACE = {
 	params ["_unit","_seconds"];
 	_counter = _seconds;
@@ -1315,7 +1302,6 @@ Lifeline_countdown_timerACE = {
 	while {lifeState _unit == "INCAPACITATED"} do {
 
 		if (_unit getVariable ["Lifeline_canceltimer",false]) exitWith {/*_unit setVariable ["Lifeline_canceltimer",false,true]; */};
-
 
 		//========================= ADDED distance
 		if (Lifeline_HUD_distance) then {
@@ -1341,4 +1327,47 @@ Lifeline_countdown_timerACE = {
 
 	// _unit setVariable ["Lifeline_canceltimer",false,true];
 	_unit setVariable ["Lifeline_countdown_start",false,true];
+};
+
+// ======== FUNCTIONS FOR DIFFERENT ACE VERSIONS
+
+if (aceversion >= 19) then {
+    Lifeline_check_carried_dragged = {
+        params ["_incap"];
+        if ([_incap] call ace_common_fnc_isBeingDragged || [_incap] call ace_common_fnc_isBeingCarried) then {
+            true
+        } else {
+            false
+        };
+    };
+	Lifeline_IV_Blood = {
+		params ["_incap","_medic"];
+		_type = selectRandom["BloodIV","PlasmaIV"];
+		[_medic, _incap, "RightArm", _type, _medic, "ACE_"+_type] call ace_medical_treatment_fnc_ivBag;
+	};
+	Lifeline_Self_IV_Blood = {
+		params ["_unit"];
+		_type = selectRandom["BloodIV","PlasmaIV"];
+		[_unit, "RightArm", _type, _unit, _unit, "ACE_"+_type] call ace_medical_treatment_fnc_ivBagLocal;
+	};
+} else {
+    Lifeline_check_carried_dragged = {
+        params ["_incap"];
+        if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) then {
+            true
+        } else {
+            false
+        };
+    };
+	Lifeline_IV_Blood = {
+		params ["_incap","_medic"];
+		// [_incap, "RightArm", selectRandom["BloodIV","PlasmaIV"]] call ace_medical_treatment_fnc_ivBagLocal;
+		_type = selectRandom["BloodIV","PlasmaIV"];
+		[_medic, _incap, "RightArm", _type, objNull, "ACE_"+_type] call ace_medical_treatment_fnc_ivBag;
+	};
+	Lifeline_Self_IV_Blood = {
+		params ["_unit"];
+		_type = selectRandom["BloodIV","PlasmaIV"];
+		[_unit, "RightArm", _type] call ace_medical_treatment_fnc_ivBagLocal;
+	};
 };

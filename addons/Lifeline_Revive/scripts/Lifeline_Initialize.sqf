@@ -39,7 +39,6 @@ diag_log "======================================================================
 	_selectfont = 5;
 	Lifeline_HUD_dist_font = Lifelinefonts select _selectfont;
 
-
 	publicVariable "Lifeline_Scope";
 	publicVariable "Lifeline_RevProtect";
 	publicVariable "Lifeline_RevMethod";

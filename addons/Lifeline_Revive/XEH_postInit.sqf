@@ -7,7 +7,6 @@ diag_log "======================================================================
 
 if !(Lifeline_revive_enable) exitWith {diag_log "1. nnnnnnnnnnnnnnnnnnnnnn MOD DISABLED. EXIT. nnnnnnnnnnnnnnnnnnnnnnn'";};
 
-
 if (Lifeline_ACEcheck_ == true) then {
 	diag_log format ["kkkkkkkkkkkkkkkkkkkkkkkkkkkk ACE oldACE var = %1 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'", oldACE];
 };
@@ -16,14 +15,12 @@ diag_log format ["kkkkkkkkkkkkkkkkkkkkkkkkkkkk ACE Lifeline_ACEcheck_ var = %1 k
 
 player setVariable ["tcb_ais_aisInit",true];
 
-
 _players = allPlayers - entities "HeadlessClient_F";
 Lifeline_Side = side (_players select 0);
 
 	{
 		_x setVariable ["tcb_ais_aisInit",true];
 	} foreach (allunits select {(simulationEnabled _x)});
-
 
 // check for ACE medical
 if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {
@@ -48,8 +45,6 @@ if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {
 
 	diag_log "=====kkkkkkkkkkkkkkkkkkkkkkkkkkk NO ACE MEDICAL kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk===='";
 };
-
-
 
 [] execvm "Lifeline_Revive\init.sqf";
 [] execvm "Lifeline_Revive\initserver.sqf";

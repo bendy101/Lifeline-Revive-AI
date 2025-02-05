@@ -6,7 +6,6 @@ diag_log "================================================== init.sqf ==========
 diag_log "============================================================================================================='";
 diag_log "============================================================================================================='";
 
-
 if (isServer) then {
 		if (!isNil "actionLifelineID1") then {player removeAction actionLifelineID1};
 		if (!isNil "actionLifelineID2") then {player removeAction actionLifelineID2};
@@ -68,5 +67,4 @@ if (isServer) then {
 	};
 
 }; //if (isServer) then {
-
 

@@ -6,8 +6,6 @@ diag_log "========================================== Lifeline_Global.sqf =======
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
 
-
-
 // function to check revive pair and cancel the medic if needed
 Lifeline_exit_travel = {
 	params ["_incap","_medic","_diagtext","_linenumber"];
@@ -20,7 +18,8 @@ Lifeline_exit_travel = {
 
 	_ifACEdragged = false;
 	if (Lifeline_RevMethod == 3) then {
-		if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) then {
+		// if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) then {
+		if ([_incap] call Lifeline_check_carried_dragged) then {
 		_ifACEdragged = true;
 		};
 	};
@@ -40,9 +39,6 @@ Lifeline_exit_travel = {
 	};
 _exit
 };
-
-
-
 
 // List of all incapped units and assigned medics in HUD. Needs to be used with "foreach"
 Lifeline_incap_list_HUD = {
@@ -113,8 +109,6 @@ params ["_x","_diag_text"];
 _diag_text
 };
 
-
-
 Lifeline_Smoke = {
 	params ["_incap", "_medic"];
 	_reldir = 0;
@@ -149,8 +143,6 @@ Lifeline_Smoke = {
 	true
 };
 
-
-
 Lifeline_EnemyCloseBy = {
 	params ["_unit"];
 	_EnemiesCloseBy = [];
@@ -165,8 +157,6 @@ Lifeline_EnemyCloseBy = {
 	};
 	_EnemyCloseBy
 };
-
-
 
 Lifeline_POSnexttoincap = {
 params ["_incap", "_medic", "_distnextto"];	
@@ -188,8 +178,6 @@ params ["_incap", "_medic", "_distnextto"];
 	_newPosition
 };
 
-
-
 Lifeline_delYelMark = {
 	params ["_unit"];
 	if !(Lifeline_yellowmarker) exitWith {};
@@ -200,8 +188,6 @@ Lifeline_delYelMark = {
 	// _ymrkrs = nearestObjects [_unit,["Sign_Arrow_Yellow_F"], 2];
 	// {deleteVehicle _x} foreach _ymrkrs;
 };
-
-
 
 Lifeline_delIncapMrk = {
 	params ["_unit"];
@@ -215,8 +201,6 @@ Lifeline_delIncapMrk = {
 	} foreach _allmarkers;
 	true
 };
-
-
 
 Lifeline_reset2 = {
 	params ["_units","_lineno"];
@@ -273,22 +257,22 @@ Lifeline_reset2 = {
 
 			//this should be completely turned off. 
 			if (lifestate _x != "INCAPACITATED") then { 
+				_captive = _x getVariable ["Lifeline_Captive", false];
 				if !(local _x) then {
 					[_x, true] remoteExec ["allowDamage",_x];
-					[_x, false] remoteExec ["setCaptive",_x];
+					// [_x, false] remoteExec ["setCaptive",_x];
+					[_x, _captive] remoteExec ["setCaptive",_x];
 				} else {
 					_x allowDamage true;
-					_x setCaptive false; 
+					// _x setCaptive false; 
+					_x setCaptive _captive; 
 				};		
 			};	
 		};	//if (alive _x) then 
 	} forEach _units;
 
-
 	true
 };
-
-
 
 Lifeline_SelfHeal = {
 	params ["_unit"];
@@ -329,8 +313,6 @@ Lifeline_SelfHeal = {
 
 	true
 };
-
-
 
 //========================== MAIN FUNCTION LOOP TO CHECK INCAP / MEDIC PAIR
 Lifeline_PairLoop = {
@@ -429,10 +411,10 @@ Lifeline_PairLoop = {
 		};
 		// };		
 
-
 		_ifACEdragged = false;
 		if (Lifeline_RevMethod == 3) then {
-			if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) then {
+			// if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) then {
+			if ([_incap] call Lifeline_check_carried_dragged) then {
 			_ifACEdragged = true;
 			};
 		};
@@ -500,8 +482,6 @@ Lifeline_PairLoop = {
 	}; // end while
 
 }; // END Fnc spawn recovery, recycle or death func
-
-
 
 //========================== MAIN REVIVE FUNCTION STARTING MEDIC TRAVEL
 Lifeline_StartRevive = {
@@ -639,9 +619,7 @@ Lifeline_StartRevive = {
 						//================================
 					};
 
-
 					_telepcheck = _revivePos;
-
 
 					// if (_revivePos isNotEqualTo _revivePosCheck) then {
 					if (_revivePos distance2D _revivePosCheck > 0.2 && _medic distance2D _incap > 4) then {
@@ -685,7 +663,6 @@ Lifeline_StartRevive = {
 					};
 				}; //if (_medic distance2D _revivePos < 10) then { 
 
-
 				sleep 2;
 				_medicpos2 = getPos _medic;
 
@@ -703,7 +680,6 @@ Lifeline_StartRevive = {
 		// [center, minDist, maxDist, objDist, waterMode, maxGrad, shoreMode, blacklistPos, defaultPos] call BIS_fnc_findSafePos
 
 	}; // END IF (_medic getVariable ["Lifeline_ExitTravel", false] == false && _exit == false) then {
-
 
 	if !(_exit) then {
 		_linenumber = "0817";
@@ -723,7 +699,6 @@ Lifeline_StartRevive = {
 	};
 
 	_waypoint = [];
-
 
 	if (alive _medic && alive _incap && (lifestate _incap == "INCAPACITATED") && (lifestate _medic != "INCAPACITATED") && _medic getVariable ["Lifeline_ExitTravel", false] == false && _exit == false) then {
 			_revivePos = [_incap, _medic, _distnextto] call Lifeline_POSnexttoincap;	
@@ -799,7 +774,6 @@ Lifeline_StartRevive = {
 			_revivePosX = _incap getVariable ["Lifeline_RevPosX",_revivePos];
 			_revivePos = _revivePosX;
 
-
 			// DISTANCE RADIUS <=10 || 	// DISTANCE RADIUS <=15
 
 			// _revivePos = [_incap, _medic, _distnextto] call Lifeline_POSnexttoincap;	
@@ -821,7 +795,6 @@ Lifeline_StartRevive = {
 			_revivePosX = _incap getVariable ["Lifeline_RevPosX",_revivePos];
 			_revivePos = _revivePosX;
 
-
 			// DISTANCE RADIUS <=8 || 	// DISTANCE RADIUS <=15
 
 			waitUntil {
@@ -834,11 +807,13 @@ Lifeline_StartRevive = {
 				)
 			};
 
-
 			if (lifestate _medic != "INCAPACITATED" && (alive _medic) && lifestate _incap == "INCAPACITATED" && (alive _incap) && (_incap getvariable ["LifelinePairTimeOut",0] != 0)) then {
 				_pairtimebaby = "LifelinePairTimeOut";
 				_incap setVariable [_pairtimebaby, (_incap getvariable _pairtimebaby) + 5, true]; 
 				_medic setVariable [_pairtimebaby, (_medic getvariable _pairtimebaby) + 5, true];
+
+				if (captive _medic) then {_medic setVariable ["Lifeline_Captive",true,true]} else {_medic setVariable ["Lifeline_Captive",false,true]}; //2025
+
 				if !(local _medic) then {
 					[_medic,dmg_trig] remoteExec ["allowDamage",_medic];
 					[_medic,cptv_trig] remoteExec ["setCaptive",_medic];
@@ -858,7 +833,6 @@ Lifeline_StartRevive = {
 			// some medics were getting stuck waiting for this. Added a timer to unblock.
 			_revivePosX = _incap getVariable ["Lifeline_RevPosX",_revivePos];
 			_revivePos = _revivePosX;
-
 
 			// DISTANCE RADIUS <=6 || 	// DISTANCE RADIUS <=8
 
@@ -914,7 +888,6 @@ Lifeline_StartRevive = {
 				_greenmark = createVehicle ["Sign_Arrow_green_F", getPos _medic,[],0,"can_collide"];
 				_medic setVariable ["_greenmark1", _greenmark, true]; 
 			};
-
 
 			//this is vital and must be kept, otherwise anim stands up
 			if (alive _medic && !(lifestate _medic == "INCAPACITATED")) then {
@@ -1002,13 +975,11 @@ Lifeline_StartRevive = {
 				)
 			};	
 
-
 			// GREEN MARKER FOR APPROACH GREETING
 			if (Lifeline_Revive_debug && Lifeline_yellowmarker) then {
 				_greenmark = createVehicle ["Sign_Arrow_green_F", getPos _medic,[],0,"can_collide"];
 				_medic setVariable ["_greenmark2", _greenmark, true]; 
 			};
-
 
 			// remove collision //moved
 			if (alive _incap && alive _medic) then {
@@ -1124,7 +1095,6 @@ Lifeline_StartRevive = {
 				)
 			};
 
-
 			// if (alive _medic && !(lifestate _medic == "INCAPACITATED")) then {
 			if (alive _medic && !(lifestate _medic == "INCAPACITATED") && (_exit == false && _medic getVariable ["Lifeline_ExitTravel", false] == false)) then {
 				// _medic doWatch _incap;
@@ -1144,15 +1114,11 @@ Lifeline_StartRevive = {
 				)
 			};			
 
-
 	};		// end (alive _medic && (lifestate _incap == "incapacitated")
-
 
 	//======= END IF  end (alive _medic && (lifestate _incap == "incapacitated")
 
-
 	sleep 0.2;
-
 
 	if (alive _incap && alive _medic && lifestate _incap == "INCAPACITATED" && lifestate _medic != "INCAPACITATED" && _exit == false && _medic getVariable ["Lifeline_ExitTravel", false] == false ) then {
 
@@ -1187,7 +1153,6 @@ Lifeline_StartRevive = {
 		if (_exitanim == true) exitWith {
 		};
 
-
 		// ========= WAKE UP (IF)
 		if (lifestate _medic != "INCAPACITATED" && alive _medic && alive _incap) then {
 
@@ -1206,12 +1171,9 @@ Lifeline_StartRevive = {
 
 	}; // END IF alive medic and incap unit and lifestate incap == "incapacitated" 
 
-
-
 	//=====================================================================================================
 	//========= EITHER WAKE UP OR BYPASS ==================================================================
 	//=====================================================================================================
-
 
 	// Debug get total revive time and remove debug path marker
 	if (Lifeline_Revive_debug) then {
@@ -1256,12 +1218,15 @@ Lifeline_StartRevive = {
 
 	if (lifestate _medic != "INCAPACITATED") then { //added this conditional. if the medic gets downed, then we dont want to reset these
 
+		_captive = _medic getVariable ["Lifeline_Captive", false];
 		if !(local _medic) then {
 				[_medic,true] remoteExec ["allowDamage",_medic];
-				[_medic,false] remoteExec ["setCaptive",_medic];
+				// [_medic,false] remoteExec ["setCaptive",_medic];
+				[_medic,_captive] remoteExec ["setCaptive",_medic];
 			} else {
 				_medic allowDamage true;
-				_medic setCaptive false;
+				// _medic setCaptive false;
+				_medic setCaptive _captive;
 			};
 		[_medic, objNull] remoteExec ["doWatch",_medic];
 	};
@@ -1292,10 +1257,7 @@ Lifeline_StartRevive = {
 	sleep 5; //delay enableing "ANIM" for 5 secs to stop unit spinning on the ground
 	_medic enableAI "ANIM";
 
-
 }; // End AIReviveUnits Fnc
-
-
 
 Lifeline_Map = {
 	params ["_unit"];
@@ -1340,8 +1302,6 @@ Lifeline_Map = {
 	};
 };
 
-
-
 Lifeline_checkdegrees = {
 	params ["_incap", "_medic","_range"];
 
@@ -1362,8 +1322,6 @@ Lifeline_checkdegrees = {
 	_isWithinRange
 
 };
-
-
 
 Lifeline_align_dir = {
 params ["_unit","_revivepos"];
@@ -1408,7 +1366,5 @@ reset_idle_medics = {
 	sleep 0.1;
 	if (Lifeline_Revive_debug) then {[_unit,"IDLE MEDIC reset_idle_medics [Lifeline_Functions.sqf]"] call serverSide_unitstate;};
 };
-
-
 
  

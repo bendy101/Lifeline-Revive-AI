@@ -8,14 +8,12 @@ diag_log "======================================================================
 
 [] execvm "Lifeline_Revive\scripts\Lifeline_Debugging.sqf"; 
 
-
 // these functions here for text aligned on right edge of screen according to screen resolution.
 Lifeline_get_right_align = {
 	((safeZoneW - 1) * 0.48)
 };
 
 Lifeline_right_align = [] call Lifeline_get_right_align;
-
 
 Lifeline_display_textright = {
 	params ["_text","_ypos","_sec"];
@@ -27,10 +25,6 @@ Lifeline_display_textright2 = {
 	params ["_text","_ypos","_sec"];
 	[_text,((safeZoneW - 1) * 0.48),_ypos,_sec,0,0,Lifelinetxt1Layer] spawn BIS_fnc_dynamicText;
 };
-
-
-
-
 
 waitUntil {time > 0}; //pause until game started
 diag_log "===============================START fix_other_revive_systems.sqf==========================='";
@@ -128,7 +122,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 		} foreach (allunits select {isplayer leader _x && simulationEnabled _x});
 	};
 
-
 	// FORCE DISABLE Farooq Revive
 	// Overwrite player initialization.
 	far_player_init = compileFinal "";
@@ -139,7 +132,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 		far_muteACRE = nil;    // Same, but for very old versions.
 		far_debugging = false; // Disable adding event handlers to AI in SP.
 	}, [], 5] call CBA_fnc_waitUntilAndExecute;
-
 
 	if (_3rdpartyReviveDetected != "" && isServer) then {
 	[_3rdpartyReviveDetected] spawn {
@@ -153,9 +145,7 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 		};
 	};
 
-
 }; // if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
-
 
 // if (isNil "oldACE") then {
 
@@ -165,7 +155,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 	// FORCE DISABLE BI Revive for Lifeline_RevMethod 2. (this works. I could not get the global turnoff working.)
 	BI_ReviveDetected_ = getMissionConfigValue ["ReviveMode", 0]; 
 	if ((player call BIS_fnc_reviveEnabled) == true) then {BI_ReviveDetected_ = 1};
-
 
 	//remove BI revive
 	if !(isDedicated) then {
@@ -180,7 +169,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 
 	if (BI_ReviveDetected_ == 0) then {
 	};
-
 
     // ==========DETECT MISSION TYPE WITH HINT AT START
 
@@ -247,7 +235,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 		 };
 
 // }; // end isNil "oldACE"
-
 
 //============================ LOAD MAIN FILES =============================
 // if (isNil "oldACE") then {

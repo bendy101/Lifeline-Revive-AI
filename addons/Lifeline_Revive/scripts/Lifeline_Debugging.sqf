@@ -16,8 +16,6 @@ Debug_LifelineBleedOutTime_not_zero = true;
 Debug_reviveinprogresserror = true;
 Debug_reviveinprogress1dmgfalse = true;
 
-
-
 // if (isServer) then {group _medic setSpeedMode "LIMITED";
 
 	serverSide_unitstate = {
@@ -143,12 +141,15 @@ params ["_x"];
 								if (Lifeline_hintsilent) then {hintsilent format ["BUG %1\n%2", name _x,_diagtext]};
 								["invincible_or_captive"] remoteExec ["playSound",Debug_to];
 								// = HACKFIX 
-								if !(local _x) then {
+								_captive = _x getVariable ["Lifeline_Captive", false];
+								if !(local _x) then {									
 									[_x, true] remoteExec ["allowDamage",_x];
-									[_x, false] remoteExec ["setCaptive",_x];	
+									// [_x, false] remoteExec ["setCaptive",_x];	
+									[_x, _captive] remoteExec ["setCaptive",_x];	
 								} else {
 									_x allowDamage true;
-									_x setCaptive false;		
+									// _x setCaptive false;		
+									_x setCaptive _captive;		
 								};
 								if (Lifeline_debug_soundalert) then {["hackfix"] remoteExec ["playSound",2]};	
 							};
@@ -308,7 +309,6 @@ params ["_x"];
 						};
 					};	
 };
-
 
 LifelineSpeedMarker = {
 	params ["_medic","_line"];

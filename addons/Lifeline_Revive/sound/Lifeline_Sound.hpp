@@ -224,7 +224,6 @@
 			titles[] = {};
 		};	
 
-
 //===================== Adam		
 
 	class Adam_leftleg1 {
@@ -2592,9 +2591,6 @@
 			sound[]={"Lifeline_Revive\sound\Bruce\RandomGreet_B\Bruce_youcovered1.ogg", 10, 1, 50};
 			titles[] = {};
 		};	
-
-
-
 
 	/// TEST SOUNDS
 	class testA {

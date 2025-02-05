@@ -16,7 +16,6 @@ params ["_unit"];
 					_Lifeline_DHcount = _Lifeline_DHcount + 1;
 					_unit setVariable ["DHcount",_Lifeline_DHcount,true];
 
-
 					if (_hitPoint != "hitlegs" && _hitPoint != "hitarms" && _hitPoint != "hithands" && _damage >= 0.998 && !(_unit getVariable ["Lifeline_allowdeath",false])) then {
 										_preventdeath = 0;   
 										if (Lifeline_InstantDeath == 1) then {
@@ -41,7 +40,6 @@ params ["_unit"];
 						_diag_text = format ["%1 | %2 xxxxxxxxxxxxxxxxxxxx KILLED WHILE DOWN xxxxxxxxxxxxxxxxxxx", name _unit, lifestate _unit]; if !(isServer) then {[_diag_text] remoteExec ["diag_log", 2];} else {diag_log _diag_text};
 						//_diag_text = format ["%1 | %2 xxxxxxxxxxxxxxxxxxxx KILLED WHILE DOWN xxxxxxxxxxxxxxxxxxx", name _unit, lifestate _unit]; if !(isServer) then {[_diag_text] remoteExec ["diag_log", 2];} else {diag_log _diag_text};
 					};
-
 
 					// use _hitPoint == "incapacitated" to count bullets. Its not exact but close enough.
 					_bullethits = (_unit getVariable ["Lifeline_bullethits",0]); 
