@@ -59,12 +59,12 @@ if (isServer) then {
 	actionLifelineID4 = player addAction ["<t size='1.5' color='#FF5733'>Cancel Lifeline Revive</t>", {Lifeline_cancel = true;[] call LifelineremoveactionmenuIDs;}];
 
 	//remind host player to start or cancel Lifeline Revive
-	[] spawn {
+/* 	[] spawn {
 		sleep 600;
 		if (Lifelinestartedscript == false) then {	 
 			["Please start Lifeline Revive. Scroll the mouse wheel to choose. ", "Lifeline Revive: please start or cancel", true, false] call BIS_fnc_guiMessage;  	
 		};
-	};
+	}; */
 
 }; //if (isServer) then {
 

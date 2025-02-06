@@ -84,14 +84,14 @@ Lifeline_RevMethod = 2;
 if (Lifeline_ACEcheck_ == true) then {
 	["Lifeline_ACE_Bandage_Method", "LIST",     ["ACE Bandage method",     "1. Default ACE bandaging.\n2. Less Bandages required.\n\n"], "Lifeline Revive", [[1, 2], ["Default ACE bandaging","Less Bandages required"], 1]] call CBA_fnc_addSetting;
 	["Lifeline_ACE_Blackout", "CHECKBOX", ["Disable Unconscious Blackout Screen", "Disable the ACE blackout effect when unconscious\n\n"], "Lifeline Revive", false,true] call CBA_fnc_addSetting;
-	["Lifeline_ACE_OPFORlimitbleedtime", "SLIDER",   ["PVE: Enemy Bleedout Time Limit",   
+	["Lifeline_ACE_OPFORlimitbleedtime", "SLIDER",   ["PVE: Limit Enemy Bleedout Time",   
 	"Workshop missions often require certain number of enemies killed to 
 	complete a task or trigger a script. If you have ACE loaded and 
 	the mission is not designed for ACE, you have to wait sometimes ages 
 	for enemies to bleedout before the task is triggered.
 	This setting limits bleedout time for enemy with ACE medical.
 	Set to zero to disable.
-	If the mission is PVP, this is bypassed.\n\n"], ["Lifeline Revive","TWEAKS | MISSIONS NOT DESIGNED FOR ACE"], [60, 120, 90, 0],true,{Lifeline_ACE_OPFORlimitbleedtime = round Lifeline_ACE_OPFORlimitbleedtime}] call CBA_fnc_addSetting;
+	If the mission is PVP, this is bypassed.\n\n"], ["Lifeline Revive","TWEAKS | MISSIONS NOT DESIGNED FOR ACE"], [0, 120, 90, 0],true,{Lifeline_ACE_OPFORlimitbleedtime = round Lifeline_ACE_OPFORlimitbleedtime}] call CBA_fnc_addSetting;
 	["Lifeline_ACE_CIVILIANlimitbleedtime", "CHECKBOX", ["Include Civilians for Bleedout Limit Above", "Include Civilians to setting above\n\n"], ["Lifeline Revive","TWEAKS | MISSIONS NOT DESIGNED FOR ACE"], false,true] call CBA_fnc_addSetting;
 	Lifeline_RevMethod = 3;
 };
