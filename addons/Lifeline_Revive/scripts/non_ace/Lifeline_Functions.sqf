@@ -134,8 +134,10 @@ Lifeline_Incapped = {
 		[_unit, _randanim] remoteExec ["PlayMoveNow", _unit];							//HERE
 		[_unit, "UnconsciousFaceUp"] remoteExec ["PlayMove", _unit];
 		// added for protection after incap. 
-		_unit allowDamage dmg_trig;
-		// _unit setCaptive true;//TEMPCAPTIVEOFF
+		if (Lifeline_RevProtect != 3) then {
+			_unit allowDamage dmg_trig;
+			// _unit setCaptive true;//TEMPCAPTIVEOFF
+		};		
 		if (Lifeline_RevProtect != 1) then {
 		_unit setVariable ["Lifeline_allowdeath",true,true];
 		};

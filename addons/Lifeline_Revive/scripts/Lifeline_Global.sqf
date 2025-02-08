@@ -814,13 +814,15 @@ Lifeline_StartRevive = {
 
 				if (captive _medic) then {_medic setVariable ["Lifeline_Captive",true,true]} else {_medic setVariable ["Lifeline_Captive",false,true]}; //2025
 
-				if !(local _medic) then {
-					[_medic,dmg_trig] remoteExec ["allowDamage",_medic];
-					[_medic,cptv_trig] remoteExec ["setCaptive",_medic];
-				} else {
-					_medic allowDamage dmg_trig;
-					_medic setCaptive cptv_trig;
-				};								
+				if (Lifeline_RevProtect != 3) then {
+					if !(local _medic) then {
+						[_medic,dmg_trig] remoteExec ["allowDamage",_medic];
+						[_medic,cptv_trig] remoteExec ["setCaptive",_medic];
+					} else {
+						_medic allowDamage dmg_trig;
+						_medic setCaptive cptv_trig;
+					};
+				};							
 			};
 
 			_linenumber = "0978";

@@ -52,8 +52,10 @@
 	_player setVariable ["ReviveInProgress",2,true]; 
 	// _player setcaptive true;
 	// _player allowDamage dmg_trig; 
-	[_player, dmg_trig] remoteExec ["allowDamage",_player];
-	[_player, true] remoteExec ["setCaptive",_player]; 	
+	if (Lifeline_RevProtect != 3) then {
+		[_player, dmg_trig] remoteExec ["allowDamage",_player];
+		[_player, true] remoteExec ["setCaptive",_player]; 	
+	};
 
 	//temporarily clear action menu while reviving	
 	if (Lifeline_RevMethod == 2) then {

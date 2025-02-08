@@ -12,7 +12,7 @@ if (Lifeline_Voices == 3) then { Lifeline_UnitVoices = ["Adam", "Antoni", "Arnol
 
 if (Lifeline_RevProtect == 1) then {dmg_trig=false; cptv_trig=true};
 if (Lifeline_RevProtect == 2) then {dmg_trig=true; cptv_trig=true};
-if (Lifeline_RevProtect == 3) then {dmg_trig=true; cptv_trig=true};//changed for antistasi
+//if (Lifeline_RevProtect == 3) then {dmg_trig=true; cptv_trig=true};//changed for antistasi
 
 if (Lifeline_Revive_debug) then {
 	[] call serverSide_MissionSettings;//just diaglogs
@@ -160,6 +160,18 @@ if (isServer) then {
 
 		// ALL PLAYABLE (SLOTS)
 		if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {(side (group _x) == Lifeline_Side) && simulationEnabled _x  && (_x in playableUnits) && rating _x > -2000}};
+
+		//WIP
+		playerSide1 = side group player;//this needs to be updated for dedicated servers.
+		if (Lifeline_ACE_CIVILIANlimitbleedtime == false) then {
+			enemyUnitsJa = allUnits select {
+				[playerSide1, side group _x] call BIS_fnc_sideIsEnemy
+			};
+		} else {
+			enemyUnitsJa = allUnits select {
+				[playerSide1, side group _x] call BIS_fnc_sideIsEnemy || side group _x == CIVILIAN 
+			};
+		};
 
 		publicVariable "Lifeline_All_Units";
 		waitUntil {count Lifeline_All_Units >0};
@@ -608,8 +620,7 @@ if (isServer) then {
 					if (lifeState _x == "INCAPACITATED" && pve == true) then {  
 						[_x] spawn { 
 							params ["_x"];
-							// hint "trigger";
-							sleep (random (Lifeline_ACE_OPFORlimitbleedtime - 60)); 
+							sleep (random (Lifeline_ACE_OPFORlimitbleedtime)); 
 							// if (alive _x && lifeState _x == "INCAPACITATED") then {
 							if (alive _x && lifeState _x == "INCAPACITATED" && _x getVariable ["ReviveInProgress",0] != 3) then {
 								[_x, "LifeLine Revive Timer", _x, _x] call ace_common_fnc_setDead;
@@ -778,7 +789,7 @@ if (isServer) then {
 		_unitbaby == name player;
 	};
 
-	_diag_textbaby = format [">>>>>>>[0821]>>>>>>>>>>>>>>> Lifeline Revive initialized. HOST: %1 SCRIPT VERSION: %2    %3 >>>>>>>>>>>>>>>>>>>>>>> ", _unitbaby, Lifeline_Version, Lifeline_Version_no];
+	_diag_textbaby = format [">>>>>>>[0821]>>>>>>>>>>>>>>> Lifeline Revive initialized. HOST: %1 SCRIPT VERSION: %2  %3 >>>>>>>>>>>>>>>>>>>>>>> ", _unitbaby, Lifeline_Version, Lifeline_Version_no];
 	[_diag_textbaby] remoteExec ["diag_log", 2];
 
 	Lifeline_incaps2choose = [];
