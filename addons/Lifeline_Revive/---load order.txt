@@ -1,0 +1,15 @@
+XEH_preInit.sqf				// part of CBA
+XEH_postInit.sqf			// part of CBA
+	fnc_deserializeState3.xx.sqf
+	initserver.sqf
+	init.sqf
+		fix_other_revive_sys.sqf
+			Lifeline_Debugging.sqf
+			Lifeline_Global.sqf
+			hotwire_vehicles.sqf
+			Lifeline_ReviveEngine.sqf
+				Lifeline_Functions.sqf | Lifeline_ACE_Functions.sqf
+			
+
+//not loaded for now
+Lifeline_Initialize.sqf
