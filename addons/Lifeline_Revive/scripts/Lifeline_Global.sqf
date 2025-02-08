@@ -98,6 +98,9 @@ params ["_x","_diag_text"];
 					_tme = "";
 					_distcalc = "";
 				};
+				if (_x getVariable ["Lifeline_selfheal_progss",false] == true) then {					
+					_colur2 = "#faefde"; // yellowy
+				};
 				if (isPlayer _x) then {_underline2 = "underline='1'";};
 				// _medics = _medics + (format ["<t color='%1' %2>", _colur2,_underline2]) + name _x + " " + _distcalc + _tme + "</t>   ";
 				_medics = _medics + (format ["<t color='%1' %2>", _colur2,_underline2]) + name _x + " " + "<t size='0.3'>" +_distcalc + _tme + "</t></t>   ";
@@ -1057,6 +1060,13 @@ Lifeline_StartRevive = {
 			if (Lifeline_debug_soundalert && Lifeline_Revive_debug) then {playsound "forcedirection"};
 			if (Lifeline_hintsilent && Lifeline_Revive_debug) then {hint format ["%1 FORCE DIR MEDIC dist: %2", name _medic, _medic distance2d _newrevpos]};
 			[_medic,_animMove] remoteExec ["playMoveNow",_medic];
+			//check its right direction - updated 2025
+			/* _checkdegrees = [_revivepos,_medic,25] call Lifeline_checkdegrees;
+			if (_checkdegrees == false) then {
+				[_medic,_newrevpos] call Lifeline_align_dir;
+				if (Lifeline_debug_soundalert && Lifeline_Revive_debug) then {playsound "adjust_direction"};
+				if (Lifeline_hintsilent && Lifeline_Revive_debug) then {hint format ["%1 ADJUST DIRECTION ", name _medic]};
+			}; */
 
 			_unblockwtime = time;
 			_trig1 = false;
