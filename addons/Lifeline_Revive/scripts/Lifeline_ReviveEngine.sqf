@@ -201,13 +201,15 @@ if (isServer) then {
 					_x setSkill Lifeline_AI_skill;
 				};
 
-				//set Fatigue for all units. Bypass if 0
-				if (Lifeline_Fatigue > 0) then {
-					if (Lifeline_Fatigue == 2) then {
-						if (local _x) then {_x enableFatigue false;} else {[_x, false] remoteExec ["enableFatigue", _x];};
-					} else {
-						if (local _x) then {_x enableFatigue true;} else {[_x, true] remoteExec ["enableFatigue", _x];};
-					};				
+				//set Fatigue for all units non-ACE. Bypass if 0
+				if (Lifeline_RevMethod == 2) then {  
+					if (Lifeline_Fatigue > 0) then {
+						if (Lifeline_Fatigue == 2) then {
+							if (local _x) then {_x enableFatigue false;} else {[_x, false] remoteExec ["enableFatigue", _x];};
+						} else {
+							if (local _x) then {_x enableFatigue true;} else {[_x, true] remoteExec ["enableFatigue", _x];};
+						};				
+					};
 				};
 
 				//make units "explosivespecialists" trait. Its annoying not being able to unset a bomb when accidently set. 

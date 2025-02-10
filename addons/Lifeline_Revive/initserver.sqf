@@ -5,6 +5,14 @@ diag_log "=============================================== initserver.sqf =======
 diag_log "============================================================================================================='";
 diag_log "============================================================================================================='";
 
+if (Lifeline_ACEcheck_ == true) then {
+
+	if (Lifeline_ACE_vanillaFAK) then {
+		[401, ["ACE_morphine","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_packingBandage","ACE_epinephrine","ACE_adenosine","ACE_splint","ACE_plasmaIV_500","ACE_CableTie"]] call ace_common_fnc_registerItemReplacement;
+	};
+
+};
+
 // Stop AI respawning when killed
 {
 	_x addMPEventHandler ["MPRespawn", {

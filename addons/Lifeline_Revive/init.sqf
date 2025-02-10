@@ -6,6 +6,14 @@ diag_log "================================================== init.sqf ==========
 diag_log "============================================================================================================='";
 diag_log "============================================================================================================='";
 
+if (Lifeline_ACEcheck_ == true) then {
+
+	if (Lifeline_ACE_vanillaFAK) then {
+		[401, ["ACE_morphine","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_packingBandage","ACE_epinephrine","ACE_adenosine","ACE_splint","ACE_plasmaIV_500","ACE_CableTie"]] call ace_common_fnc_registerItemReplacement;
+	};
+
+};
+
 if (isServer) then {
 		if (!isNil "actionLifelineID1") then {player removeAction actionLifelineID1};
 		if (!isNil "actionLifelineID2") then {player removeAction actionLifelineID2};

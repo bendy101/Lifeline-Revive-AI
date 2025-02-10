@@ -186,7 +186,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 				_notrepeat = "";
 				_key1 = "head";
 
-				// while {([_medic, _incap, _key1, "FieldDressing"] call ace_medical_treatment_fnc_canBandage)} do {
+				// while {([_medic, _incap, _key1, "FieldDressing"] call ace_medical_treatment_fnc_canBandage)} do { 
 				while {(_incap call ace_medical_blood_fnc_isBleeding) && alive _medic && lifestate _medic != "UNCONSCIOUS"} do {
 
 					if (lifestate _incap != "INCAPACITATED") exitWith {};
@@ -194,7 +194,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 					//if ([_incap] call ace_medical_status_fnc_isBeingDragged || [_incap] call ace_medical_status_fnc_isBeingCarried) exitWith {};
 					if ([_incap] call Lifeline_check_carried_dragged) exitWith {};
 
-					// if ([_medic, _incap, _key1, "BasicBandage"] call ace_medical_treatment_fnc_canBandage) then {  // NO LONGER WORKS
+					// if ([_medic, _incap, _key1, "BasicBandage"] call ace_medical_treatment_fnc_canBandage) then {  // "BasicBandage" NO LONGER WORKS FOR SOME REASON
 					if ([_medic, _incap, _key1, "FieldDressing"] call ace_medical_treatment_fnc_canBandage) then {
 
 						_bleedingwounds = [];

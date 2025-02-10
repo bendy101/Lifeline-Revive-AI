@@ -1,5 +1,5 @@
 Lifeline_Version = "Lifeline Revive AI";
-Lifeline_Version_no = "2025-02-08 20:21:42";
+Lifeline_Version_no = "2025-02-10 19:04:55";
 
 diag_log "                                                                                   			               '"; 
 diag_log "============================================================================================================='";
@@ -94,6 +94,7 @@ if (Lifeline_ACEcheck_ == true) then {
 	Set to zero to disable.
 	If the mission is PVP, this is bypassed.\n\n"], ["Lifeline Revive","TWEAKS | Missions not designed for ACE"], [0, 120, 90, 0],true,{Lifeline_ACE_OPFORlimitbleedtime = round Lifeline_ACE_OPFORlimitbleedtime}] call CBA_fnc_addSetting;
 	["Lifeline_ACE_CIVILIANlimitbleedtime", "CHECKBOX", ["Include Civilians for Bleedout Limit Above", "Include Civilians to setting above\n\n"], ["Lifeline Revive","TWEAKS | Missions not designed for ACE"], false,true] call CBA_fnc_addSetting;
+	["Lifeline_ACE_vanillaFAK", "CHECKBOX", ["Incl. Plasma, Splints w vanilla FirstAidKit conversion", "Missions not designed for ACE can have you stuck without\nsplints or plasma IV when you need it. This fixes that.\n\n"], ["Lifeline Revive","TWEAKS | Missions not designed for ACE"], true,true, nil ,true] call CBA_fnc_addSetting;
 	// ["Lifeline_ACE_BluFor", "LIST",     ["Only Show ACE Blufor Tracker with GPS",     "default ACE Blufor tracker shows even without a GPS. Unrealistic.\nThis option means ACE Blufor tracking will only show if you have a GPS.\nYou still need Blue Force tracking enabled in ACE settings\n\n"], ["Lifeline Revive","TWEAKS | Missions not designed for ACE"], [[0, 1, 2], ["ACE default (show regardless of GPS)","Only w GPS unit","Only w GPS minimap on"], 1]] call CBA_fnc_addSetting;
 
 	// ["Lifeline_ACE_BluFor", "CHECKBOX",    ["Only Show ACE Blufor Tracker with GPS minimap open, or microDAGR", "The default ACE Blufor tracker shows even if a player does not have a GPS. Unrealistic.\nNow the Blufor will only work if the GPS minimap is on, or have microDAGR in inventory.\nUsing minimap method so this also works for GPS-enabled vehicles.\nBlufor tracking needs to be enabled in ACE settings.\n\n"], ["Lifeline Revive","TWEAKS | Missions not designed for ACE"], true,true] call CBA_fnc_addSetting;
@@ -124,13 +125,20 @@ This is the timeout left before resetting the medic.  \n\n"], ["Lifeline Revive"
 
 ["Lifeline_Revive_debug", "CHECKBOX", ["Debug On", "Debug On. Settings below only work if this is on"], ["Lifeline Revive Advanced","DEBUG"], false,true] call CBA_fnc_addSetting;
 // ["Lifeline_Fatigue", "CHECKBOX", ["Fatigue", "Fatigue"], "Lifeline Revive Advanced", true,true] call CBA_fnc_addSetting;
-["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting;
+if (Lifeline_ACEcheck_ == true) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
 
 ["Lifeline_Hotwire", "CHECKBOX", ["Hotwire Locked Vehicles with Toolkit", "Vehicles you cannot access can now be unlocked.\nHotwire them with toolkit.\nIf the vehicle is enclosed, then you need to break in first.\nDoes not apply to armoured units.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_ExplSpec", "CHECKBOX", ["Make all your units Explosive Specialists", "It is frustrating when you accidently plant a bomb then cannot undo it.\nThis fixes that.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
-["Lifeline_Idle_Crouch", "CHECKBOX", ["Idle Crouch", "When a unit is standing and idle, it will temporarily go into a 'crouch'.\nThis only applies to 'aware' behaviour mode.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], false,true] call CBA_fnc_addSetting;
-["Lifeline_Idle_Crouch_Speed", "SLIDER",   ["Idle Crouch 'Idle' Threshold",   "For the Idle Crouch, this determinds what speed\na unit is moving to be considered 'idle'\n0 for dead still, and 1 to 5 for very slow.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [0, 5, 0, 0],true,{Lifeline_Idle_Crouch_Speed = round Lifeline_Idle_Crouch_Speed}] call CBA_fnc_addSetting;
-if (Lifeline_ACEcheck_ == true) then {["Lifeline_ACE_BluFor", "LIST",     ["Only Show ACE Blufor Tracker with GPS",     "default ACE Blufor tracker shows even without a GPS. Unrealistic.\nThis option means ACE Blufor tracking will only show if you have a GPS.\nYou still need Blue Force tracking enabled in ACE settings\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0, 1, 2], ["ACE default (show regardless of GPS)","Only w GPS unit","Only w GPS minimap on"], 1]] call CBA_fnc_addSetting};
+["Lifeline_Idle_Crouch", "CHECKBOX", ["Idle Crouch", "When a unit is standing and idle, it will temporarily go into a 'crouch'.\nThis only applies to 'aware' behaviour mode.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
+["Lifeline_Idle_Crouch_Speed", "SLIDER",   ["Idle Crouch 'Idle' Threshold",   "For the Idle Crouch, this determinds what speed\na unit is moving to be considered 'idle'\n0 for dead still, and 1 to 5 for very slow.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [0, 5, 3, 0],true,{Lifeline_Idle_Crouch_Speed = round Lifeline_Idle_Crouch_Speed}] call CBA_fnc_addSetting;
+if (Lifeline_ACEcheck_ == true) then {["Lifeline_ACE_BluFor", "LIST",     ["Only Show ACE Blufor Tracker with GPS",     
+"ACE Blufor tracker shows even without a GPS. Unrealistic.
+This option means ACE Blufor tracking will only show if you have a GPS.
+You still need Blue Force tracking enabled in ACE settings.
+
+There is also an option to only show Blufor tracking if the HUD minimap is open. 
+If you have a lot of markers on the map, you can view main map with less clutter 
+by closing minimap which will also disable Blufor tracking.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0, 1, 2], ["ACE default (show regardless of GPS)","Only w GPS unit","Only w GPS minimap on"], 1]] call CBA_fnc_addSetting};
 
 // ["Lifeline_HUD_dist_font", "LIST",     ["Font for distance hint",  "Font for distance hint"], ["Lifeline Revive Advanced","DEBUG temporary test"], [[0,1,2,3,4,5,6,7], ["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"], 0],true] call CBA_fnc_addSetting;
 ["Lifeline_HUD_dist_font", "LIST",     ["Font for distance hint",  "Font for distance hint"], ["Lifeline Revive Advanced","DEBUG temporary test"], [["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"], ["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"], 0],true] call CBA_fnc_addSetting;
@@ -212,45 +220,45 @@ disabledAI = 0;
 
 if (Lifeline_revive_enable) then {
 
-Lifeline_RevSmokeOn = true; // fix this later.
+	Lifeline_RevSmokeOn = true; // fix this later.
 
-//for on screen text
-Lifelinetxt1Layer = "Lifelinetxt1" call BIS_fnc_rscLayer; 
-Lifelinetxt2Layer = "Lifelinetxt2" call BIS_fnc_rscLayer; 
-LifelinetxtdebugLayer1 = "Lifelinetxtdebug1" call BIS_fnc_rscLayer; 
-LifelinetxtdebugLayer2 = "Lifelinetxtdebug2" call BIS_fnc_rscLayer; 
-LifelinetxtdebugLayer3 = "Lifelinetxtdebug3" call BIS_fnc_rscLayer; 
+	//for on screen text
+	Lifelinetxt1Layer = "Lifelinetxt1" call BIS_fnc_rscLayer; 
+	Lifelinetxt2Layer = "Lifelinetxt2" call BIS_fnc_rscLayer; 
+	LifelinetxtdebugLayer1 = "Lifelinetxtdebug1" call BIS_fnc_rscLayer; 
+	LifelinetxtdebugLayer2 = "Lifelinetxtdebug2" call BIS_fnc_rscLayer; 
+	LifelinetxtdebugLayer3 = "Lifelinetxtdebug3" call BIS_fnc_rscLayer; 
 
-Lifeline_travel_meth = 1; //method of revive travel when changing stance to hit ground. 0 = use playnow anim, 1 =  use unit posture (unitPos)
+	Lifeline_travel_meth = 1; //method of revive travel when changing stance to hit ground. 0 = use playnow anim, 1 =  use unit posture (unitPos)
 
-Debug_to = 2; //for debug sound
-// for experimentation
-// Lifelinefonts =["EtelkaMonospacePro","EtelkaMonospaceProBold","EtelkaNarrowMediumPro","LCD14","LucidaConsoleB","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight","TahomaB"];
-Lifelinefonts =["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"];
+	Debug_to = 2; //for debug sound
+	// for experimentation
+	// Lifelinefonts =["EtelkaMonospacePro","EtelkaMonospaceProBold","EtelkaNarrowMediumPro","LCD14","LucidaConsoleB","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight","TahomaB"];
+	Lifelinefonts =["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"];
 
-// some missions delete action menus (mouse scroll wheel menu) on start. So this will load the RO
-LifelineREV4_fnc_keyDown = {
-    // Code to execute when the key is pressed down.
-    // You can put your function logic here.
-    // hint "MyKey is pressed!";
-	hint "..initializing";
-	execVM "\Lifeline_Revive\init.sqf";
-	execVM "\Lifeline_Revive\initserver.sqf";
-};
+	// some missions delete action menus (mouse scroll wheel menu) on start. So this will load the RO
+	LifelineREV4_fnc_keyDown = {
+		// Code to execute when the key is pressed down.
+		// You can put your function logic here.
+		// hint "MyKey is pressed!";
+		hint "..initializing";
+		execVM "\Lifeline_Revive\init.sqf";
+		execVM "\Lifeline_Revive\initserver.sqf";
+	};
 
-/* LifelineREV4_fnc_keyUp = {
-    // Code to execute when the key is released.
-    // You can put your function logic here.
-}; 
- */
+	/* LifelineREV4_fnc_keyUp = {
+		// Code to execute when the key is released.
+		// You can put your function logic here.
+	}; 
+	*/
 
-// temp debug vars	
-Debug_Lifeline_downequalstrue = true;	
-Debug_unconsciouswithouthandler = true;
-Debug_overtheshold = true;	
-Debug_Zeusorthirdparty = true;	
-Debug_invincible_or_captive = true;
-Debug_incapdeathtimelimit_not_zero = true;
-Debug_reviveinprogresserror = true;
+	// temp debug vars	
+	Debug_Lifeline_downequalstrue = true;	
+	Debug_unconsciouswithouthandler = true;
+	Debug_overtheshold = true;	
+	Debug_Zeusorthirdparty = true;	
+	Debug_invincible_or_captive = true;
+	Debug_incapdeathtimelimit_not_zero = true;
+	Debug_reviveinprogresserror = true;
 
 };
