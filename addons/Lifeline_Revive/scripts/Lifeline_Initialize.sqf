@@ -1,3 +1,7 @@
+// This file only loads for server version of Lifeline Revive.
+// It declares same variables as the MOD version..
+// This makes it easier to have same core files for both versions.
+
 diag_log "                                                                                                '"; 
 diag_log "                                                                                                '"; 
 diag_log "============================================================================================================='"; 
@@ -5,7 +9,28 @@ diag_log "======================================================================
 diag_log "======================================== Lifeline_Initialize.sqf ==============================================='"; 
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
-// Just some variables to set.
+
+	//emulate the MOD version where CBA settings only exist if ACE is loaded or not. 
+	if (Lifeline_ACEcheck_ == false) then {
+		Lifeline_ACE_vanillaFAK = nil;
+		Lifeline_ACE_CIVILIANlimitbleedtime = nil;
+		Lifeline_ACE_OPFORlimitbleedtime = nil;
+		Lifeline_ACE_Blackout = nil;
+		Lifeline_ACE_Bandage_Method = nil;
+		Lifeline_ACE_BluFor = nil;
+	};
+
+	if (Lifeline_ACEcheck_ == true) then {
+		Lifeline_BandageLimit = nil;
+		Lifeline_InstantDeath = nil;
+		Lifeline_BleedOutTime = nil;
+		Lifeline_autoRecover = nil;
+		Lifeline_CPR_likelihood = nil;
+		Lifeline_CPR_less_bleedouttime = nil;
+		Lifeline_IncapThres = nil;
+		Lifeline_cntdwn_disply = nil;
+		Lifeline_Fatigue = nil;	
+	};
 
 	Lifeline_yellowmarker = true;
 	Lifeline_remove_3rd_pty_revive = true;

@@ -125,7 +125,7 @@ This is the timeout left before resetting the medic.  \n\n"], ["Lifeline Revive"
 
 ["Lifeline_Revive_debug", "CHECKBOX", ["Debug On", "Debug On. Settings below only work if this is on"], ["Lifeline Revive Advanced","DEBUG"], false,true] call CBA_fnc_addSetting;
 // ["Lifeline_Fatigue", "CHECKBOX", ["Fatigue", "Fatigue"], "Lifeline Revive Advanced", true,true] call CBA_fnc_addSetting;
-if (Lifeline_ACEcheck_ == true) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
+if (Lifeline_ACEcheck_ == false) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
 
 ["Lifeline_Hotwire", "CHECKBOX", ["Hotwire Locked Vehicles with Toolkit", "Vehicles you cannot access can now be unlocked.\nHotwire them with toolkit.\nIf the vehicle is enclosed, then you need to break in first.\nDoes not apply to armoured units.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_ExplSpec", "CHECKBOX", ["Make all your units Explosive Specialists", "It is frustrating when you accidently plant a bomb then cannot undo it.\nThis fixes that.\n\n"], ["Lifeline Revive","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
