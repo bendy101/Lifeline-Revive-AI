@@ -35,6 +35,9 @@ if (Lifeline_ACEcheck_ == true) then {
 		_unit setVariable ["ReviveInProgress",0,true];
 		_unit setVariable ["num_bandages",nil,true]; // just for debug text . Instead of "(0)" have "(?)" at first.
 		_unit setVariable ["Lifeline_selfheal_progss",false,true]; //to stop double firing of the selfheal
+
+		_unit setCaptive false;
+		
 		//remove wounds action ID
 		if (Lifeline_RevMethod == 2) then {
 			_actionId = _unit getVariable ["Lifeline_ActionMenuWounds",false]; 
