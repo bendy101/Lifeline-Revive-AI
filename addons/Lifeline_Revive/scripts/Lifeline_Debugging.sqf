@@ -15,26 +15,35 @@ Debug_invincible_or_captive = true;
 Debug_LifelineBleedOutTime_not_zero = true;
 Debug_reviveinprogresserror = true;
 Debug_reviveinprogress1dmgfalse = true;
+Lifeline_soundalert_died = true; // sound alert when unit dies
+Lifeline_soundalert_updatescope = true; // sound alert when update scope or [] call Lifeline_DH_update
+
+// Diag_log groups
+Lifeline_logs_DH = false; // diag logs for damage handler
+Lifeline_logs_damagecalc = false; // diag logs for damage calculation
+Lifeline_logs_reviveanim = true; // diag logs for revive process and animation
+
+Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important bug found. Then easier to read the debug logs.
 
 // if (isServer) then {group _medic setSpeedMode "LIMITED";
 
 	serverSide_unitstate = {
 		params ["_unit","_line"];
 		diag_log format ["%2 | %1 !!!!!!!!SERV | ==================================================================================================='",_line, name _unit];
-		diag_log format ["%2 | %1 !!!!!!!!SERV | dmg: %3 | state: %4 | dmg_allwd: %5 | Captive: %6 | Rating: %7 | GroupSpeed: %8'",_line, name _unit, damage _unit, lifestate _unit, isDamageAllowed _unit, captive _unit, rating _unit, speedMode (group _unit)];
-		diag_log format ["%2 | %1 !!!!!!!!SERV | Unit Side: %3 | Group Side: %7 | Lifeline_Down: %4 | Lifeline_allowdeath: %5 | ReviveInProgress: %6'",_line, name _unit, side _unit, (_unit getVariable ["Lifeline_Down","NONE"]), (_unit getVariable ["Lifeline_allowdeath","NONE"]), (_unit getVariable ["ReviveInProgress",0]), side (group _unit)];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | dmg: %3 | state: %4 | dmg_allwd: %5 | Captive: %6 | Lifeline_Captive %9 | Rating: %7 | GroupSpeed: %8'",_line, name _unit, damage _unit, lifestate _unit, isDamageAllowed _unit, captive _unit, rating _unit, speedMode (group _unit), _unit getVariable ["Lifeline_Captive","NOT SET"]];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | Group: %8 | UnitSide: %3 | GroupSide: %7 | Lifeline_Down: %4 | Lifeline_allowdeath: %5 | ReviveInProgress: %6'",_line, name _unit, side _unit, (_unit getVariable ["Lifeline_Down","NOT SET"]), (_unit getVariable ["Lifeline_allowdeath","NOT SET"]), (_unit getVariable ["ReviveInProgress","NOT SET"]), side (group _unit), group _unit];
 		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_All_Units: %3 | Lifeline_Process: %6 | Lifeline_incapacitated: %4 | Lifeline_medics: %5'",_line, name _unit, (_unit in Lifeline_All_Units), (_unit in Lifeline_incapacitated), (_unit in Lifeline_medics), (_unit in Lifeline_Process)];
-		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_countdown_start: %3 | Lifeline_canceltimer: %4 | unitPos stance: %5'",_line, name _unit, (_unit getVariable ["Lifeline_countdown_start","NONE"]), (_unit getVariable ["Lifeline_canceltimer","NONE"]), UnitPos _unit];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_countdown_start: %3 | Lifeline_canceltimer: %4 | unitPos stance: %5 | assignedVehicle %6'",_line, name _unit, (_unit getVariable ["Lifeline_countdown_start","NOT SET"]), (_unit getVariable ["Lifeline_canceltimer","NOT SET"]), UnitPos _unit, assignedVehicle _unit];
 		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_AssignedMedic:%4 | AnimationState:%3 | Lifeline_selfheal_progss:%5'",_line, name _unit, animationstate _unit, name (_unit getVariable ["Lifeline_AssignedMedic",[]] select 0), _unit getVariable ["Lifeline_selfheal_progss",false]];
 
 		_bleedout = (_unit getVariable ["LifelineBleedOutTime",0]);
 		_pairtime = (_unit getVariable ["LifelinePairTimeOut",0]);
 		if (_bleedout != 0) then {_bleedout = _bleedout - time};
 		if (_pairtime != 0) then {_pairtime = _pairtime - time};	
-		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_reset_trig: %6 | AutoRevive: %3 | Bleedout %4 | Pair Time %5'",_line, name _unit, _unit getVariable ["Lifeline_autoRecover","NONE"],_bleedout,_pairtime,_unit getVariable ["Lifeline_reset_trig",false]];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_reset_trig: %6 | AutoRevive: %3 | Bleedout %4 | Pair Time %5 | Lifeline_ExitTravel %7'",_line, name _unit, _unit getVariable ["Lifeline_autoRecover","NOT SET"],_bleedout,_pairtime,_unit getVariable ["Lifeline_reset_trig",false], _unit getVariable ["Lifeline_ExitTravel",false]];
 		if (Lifeline_RevMethod == 2) then {
-			diag_log format ["%2 | %1 !!!!!!!!SERV | unitwounds: %3'",_line, name _unit, _unit getVariable ["unitwounds","NONE"]];
-			diag_log format ["%2 | %1 !!!!!!!!SERV | _actionId: %3 | num_bandages: %4'",_line, name _unit, _unit getVariable ["Lifeline_ActionMenuWounds","NONE"],_unit getVariable ["num_bandages","NONE"]];
+			diag_log format ["%2 | %1 !!!!!!!!SERV | unitwounds: %3'",_line, name _unit, _unit getVariable ["unitwounds","NOT SET"]];
+			diag_log format ["%2 | %1 !!!!!!!!SERV | _actionId: %3 | num_bandages: %4'",_line, name _unit, _unit getVariable ["Lifeline_ActionMenuWounds","NOT SET"],_unit getVariable ["num_bandages","NOT SET"]];
 		};
 		_text1="";_text2="";_text3="";_text4="";_text5="";_text6="";_text7="";_text8="";_text9="";_text10="";_text11=""; 
 		_text12="";_text13="";_text14="";_text15="";_text16="";_text17="";_text18=""; 
@@ -71,6 +80,11 @@ Debug_reviveinprogress1dmgfalse = true;
 		_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics; diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_medics: %2'", _line, _diag_array];
 		_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_incapacitated; diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_incapacitated: %2'", _line, _diag_array];
 		_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_Process; diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_Process: %2'", _line, _diag_array];
+		// Adding missing array variables
+		diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_UnitVoices: %2'", _line, Lifeline_UnitVoices];
+		_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_players_autorev; diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_players_autorev: %2'", _line, _diag_array];
+		_diag_array = ""; {_diag_array = _diag_array + str _x + ", " } foreach Lifeline_deadVehicle; diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_deadVehicle: %2'", _line, _diag_array];
+		diag_log format ["!!!!!!!!SERVGLOBAL %1 Lifeline_right_align: %2'", _line, Lifeline_right_align];
 		diag_log format ["!!!!!!!!SERVGLOBAL %1 | ==================================================================================================='", _line];
 	};
 
@@ -85,6 +99,8 @@ Debug_reviveinprogress1dmgfalse = true;
 			diag_log format ["!!!! Lifeline_CPR_likelihood | %1 !!!!'", Lifeline_CPR_likelihood];
 			diag_log format ["!!!! Lifeline_CPR_less_bleedouttime | %1 !!!!'", Lifeline_CPR_less_bleedouttime];
 			diag_log format ["!!!! Lifeline_IncapThres | %1 !!!!'", Lifeline_IncapThres];
+			diag_log format ["!!!! Lifeline_Fatigue | %1 !!!!'", Lifeline_Fatigue];
+			diag_log format ["!!!! Lifeline_cntdwn_disply | %1 !!!!'", Lifeline_cntdwn_disply];
 		};
 		diag_log format ["!!!! Lifeline_SmokeColour | %1 !!!!'", Lifeline_SmokeColour];
 		diag_log format ["!!!! Lifeline_radio | %1 !!!!'", Lifeline_radio];
@@ -97,16 +113,39 @@ Debug_reviveinprogress1dmgfalse = true;
 		if (Lifeline_ACEcheck_ == true) then {
 			diag_log format ["!!!! Lifeline_ACE_Bandage_Method | %1 !!!!'", Lifeline_ACE_Bandage_Method];
 			diag_log format ["!!!! Lifeline_ACE_Blackout | %1 !!!!'", Lifeline_ACE_Blackout];
+			diag_log format ["!!!! Lifeline_ACE_BluFor | %1 !!!!'", Lifeline_ACE_BluFor];
+			diag_log format ["!!!! Lifeline_ACE_OPFORlimitbleedtime | %1 !!!!'", Lifeline_ACE_OPFORlimitbleedtime];
+			diag_log format ["!!!! Lifeline_ACE_CIVILIANlimitbleedtime | %1 !!!!'", Lifeline_ACE_CIVILIANlimitbleedtime];
 		};
 		diag_log format ["!!!! Lifeline_Revive_debug | %1 !!!!'", Lifeline_Revive_debug];
 		diag_log format ["!!!! Lifeline_Idle_Medic_Stop | %1 !!!!'", Lifeline_Idle_Medic_Stop];
+		// Adding missing variables
+		diag_log format ["!!!! Lifeline_SmokePerc | %1 !!!!'", Lifeline_SmokePerc];
+		diag_log format ["!!!! Lifeline_EnemySmokePerc | %1 !!!!'", Lifeline_EnemySmokePerc];
+		diag_log format ["!!!! Lifeline_HUD_nameformat | %1 !!!!'", Lifeline_HUD_nameformat];
+		diag_log format ["!!!! Lifeline_Blacklist_Mounted_Weapons | %1 !!!!'", Lifeline_Blacklist_Mounted_Weapons];
+		diag_log format ["!!!! Lifeline_Blacklist_Drivers | %1 !!!!'", Lifeline_Blacklist_Drivers];
+		diag_log format ["!!!! Lifeline_Blacklist_Armour | %1 !!!!'", Lifeline_Blacklist_Armour];
+		diag_log format ["!!!! Lifeline_Blacklist_Air | %1 !!!!'", Lifeline_Blacklist_Air];
+		diag_log format ["!!!! Lifeline_Blacklist_Car | %1 !!!!'", Lifeline_Blacklist_Car];
+		diag_log format ["!!!! Lifeline_LimitDist | %1 !!!!'", Lifeline_LimitDist];
+		diag_log format ["!!!! Lifeline_Include_OPFOR | %1 !!!!'", Lifeline_Include_OPFOR];
+		diag_log format ["!!!! Lifeline_InstantDeathOPFOR | %1 !!!!'", Lifeline_InstantDeathOPFOR];
+		diag_log format ["!!!! Lifeline_Idle_CrouchOPFOR | %1 !!!!'", Lifeline_Idle_CrouchOPFOR];
+		diag_log format ["!!!! Lifeline_Hotwire | %1 !!!!'", Lifeline_Hotwire];
+		diag_log format ["!!!! Lifeline_ExplSpec | %1 !!!!'", Lifeline_ExplSpec];
+		diag_log format ["!!!! Lifeline_Idle_Crouch_Speed | %1 !!!!'", Lifeline_Idle_Crouch_Speed];
+		diag_log format ["!!!! Lifeline_AI_skill | %1 !!!!'", Lifeline_AI_skill];
+		diag_log format ["!!!! Lifeline_Anim_Method | %1 !!!!'", Lifeline_Anim_Method];
+		diag_log format ["!!!! Lifeline_HUD_names_pairtime | %1 !!!!'", Lifeline_HUD_names_pairtime];
+		diag_log format ["!!!! Lifeline_ShowOpfor_HUDlist | %1 !!!!'", Lifeline_ShowOpfor_HUDlist];
 		diag_log format ["!!!! Lifeline_RevMethod | %1 !!!!'", Lifeline_RevMethod];
 	};
 // };
 
 //this function uses an audio vocal sample to alert of bug. Less annoying.
 Lifeline_debug_unit_states = {
-params ["_x"];
+					params ["_x"];
 
 					if (alive _x && lifestate _x != "INCAPACITATED" && _x getVariable ["ReviveInProgress",0] == 1 && (_x getVariable ["LifelinePairTimeOut",0]) == 0) then {
 						diag_log format ["%1====== TEMP MINUS ========'", name _x];
@@ -114,54 +153,59 @@ params ["_x"];
 							playsound "beep_hi_1";
 					};
 
+					// _captive = _x getVariable ["Lifeline_Captive", false];	
+
 					// if ((isDamageAllowed _x == false || captive _x == true) && alive _x && lifestate _x != "INCAPACITATED" && !(_x getVariable ["Lifeline_Down",false]) && _x getVariable ["ReviveInProgress",0] == 0 && (_x getVariable ["LifelineBleedOutTime",0]) == 0 && !(_x in Lifeline_Process)
-					if (Debug_invincible_or_captive && (isDamageAllowed _x == false || captive _x == true) && alive _x && lifestate _x != "INCAPACITATED" &&  _x getVariable ["ReviveInProgress",0] == 0 && !(_x in Lifeline_Process) // deleted _x getVariable ["LifelineBleedOutTime",0] (unlike line above)
-						&& (isNull findDisplay 60492) && (isNull findDisplay 47) && (isNull findDisplay 48) && (isNull findDisplay 50) && (isNull findDisplay 51) && (isNull findDisplay 58) && (isNull findDisplay 61) && (isNull findDisplay 312) && (isNull findDisplay 314)
+					if (Debug_invincible_or_captive && (isDamageAllowed _x == false || captive _x == true ) && alive _x && lifestate _x != "INCAPACITATED" &&  _x getVariable ["ReviveInProgress",0] == 0 && !(_x in Lifeline_Process) // deleted _x getVariable ["LifelineBleedOutTime",0] (unlike line above)
+						&& (!isPlayer _x || (isPlayer _x && (isNull findDisplay 60492) && (isNull findDisplay 47) && (isNull findDisplay 48) && (isNull findDisplay 50) && (isNull findDisplay 51) && (isNull findDisplay 58) && (isNull findDisplay 61) && (isNull findDisplay 312) && (isNull findDisplay 314)))
 					) then {
-						diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG GATE uuuuuuuuuu ReviveInProgress:%2'", name _x, (_x getVariable ["ReviveInProgress",false])];
+						diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG GATE uuuuuuuuuu ReviveInProgress:%2 damage: %3 captive: %4 Lifeline_Captive: %5'", name _x, (_x getVariable ["ReviveInProgress","NOT SET"]), isDamageAllowed _x, captive _x,  _x getVariable ["Lifeline_Captive", false]];
 						[_x] spawn {
 							params ["_x"];
-							sleep 7;
+							// sleep 7;
+							sleep 10;
+							// sleep 20;
 							// if ((isDamageAllowed _x == false || captive _x == true) && alive _x && lifestate _x != "INCAPACITATED" && !(_x getVariable ["Lifeline_Down",false]) && _x getVariable ["ReviveInProgress",0] == 0 && (_x getVariable ["LifelineBleedOutTime",0]) == 0 && !(_x in Lifeline_Process)
 							if (Debug_invincible_or_captive && (isDamageAllowed _x == false || captive _x == true) && alive _x && lifestate _x != "INCAPACITATED" && !(_x getVariable ["Lifeline_Down",false]) && _x getVariable ["ReviveInProgress",0] == 0 && !(_x in Lifeline_Process)  // deleted _x getVariable ["LifelineBleedOutTime",0] (unlike line above)
-								&& (isNull findDisplay 60492) && (isNull findDisplay 47) && (isNull findDisplay 48) && (isNull findDisplay 50) && (isNull findDisplay 51) && (isNull findDisplay 58) && (isNull findDisplay 61) && (isNull findDisplay 312) && (isNull findDisplay 314)
+								&& (!isPlayer _x || (isPlayer _x && (isNull findDisplay 60492) && (isNull findDisplay 47) && (isNull findDisplay 48) && (isNull findDisplay 50) && (isNull findDisplay 51) && (isNull findDisplay 58) && (isNull findDisplay 61) && (isNull findDisplay 312) && (isNull findDisplay 314)))
 								) then {			
 								_txtj = ""; 
 								if (isDamageAllowed _x == false) then {
 									if (captive _x == false) then {_txtj = "DAMAGE = FALSE";} else {_txtj = "DAMAGE = FALSE & CAPTIVE = TRUE";};};
 									if (isDamageAllowed _x == true && captive _x == true) then {_txtj = "CAPTIVE = TRUE";};
-								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  ReviveInProgress:%3'", name _x, _txtj, (_x getVariable ["ReviveInProgress",false])];
-								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  ReviveInProgress:%3'", name _x, _txtj, (_x getVariable ["ReviveInProgress",false])];
-								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  ReviveInProgress:%3'", name _x, _txtj, (_x getVariable ["ReviveInProgress",false])];
+								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  Lifeline_Captive:%4 ReviveInProgress:%3 '", name _x, _txtj, (_x getVariable ["ReviveInProgress","NOT SET"]),  _x getVariable ["Lifeline_Captive", false]];
+								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  Lifeline_Captive:%4 ReviveInProgress:%3'", name _x, _txtj, (_x getVariable ["ReviveInProgress","NOT SET"]),  _x getVariable ["Lifeline_Captive", false]];
+								diag_log format ["%1 is invincible or captive uuuuuuuuuu BUG uuuuuuuuuu  %2  Lifeline_Captive:%4 ReviveInProgress:%3'", name _x, _txtj, (_x getVariable ["ReviveInProgress","NOT SET"]),  _x getVariable ["Lifeline_Captive", false]];
 								//var dump
 								_diagtext = "BUG invincible or captive"; if !(local _x) then {[_x,_diagtext] remoteExec ["serverSide_unitstate", 2];[_diagtext] remoteExec ["serverSide_Globals", 2];
 								} else {[_x,_diagtext] call serverSide_unitstate;[_diagtext] call serverSide_Globals;};
 
 								if (Lifeline_hintsilent) then {hintsilent format ["BUG %1\n%2", name _x,_diagtext]};
-								["invincible_or_captive"] remoteExec ["playSound",Debug_to];
+								if (Lifeline_debug_soundalert) then {["invincible_or_captive"] remoteExec ["playSound",Debug_to];};
+								if (Lifeline_debug_ENDMISSION) then {
+									if (captive _x == true) then {failMission "captivebug"; };
+									if (isDamageAllowed _x == false) then {failMission "damagebug"; };
+								};
 								// = HACKFIX 
-								_captive = _x getVariable ["Lifeline_Captive", false];
-								if !(local _x) then {									
-									[_x, true] remoteExec ["allowDamage",_x];
-									// [_x, false] remoteExec ["setCaptive",_x];	
-									[_x, _captive] remoteExec ["setCaptive",_x];	
-								} else {
+								// _captive = _x getVariable ["Lifeline_Captive", false];
+								// if !(local _x) then {									
+									// [_x, true] remoteExec ["allowDamage",0];
+									// [_x, _captive] remoteExec ["setCaptive",0];	
+								/* } else {
 									_x allowDamage true;
 									// _x setCaptive false;		
 									_x setCaptive _captive;		
-								};
-								if (Lifeline_debug_soundalert) then {["hackfix"] remoteExec ["playSound",2]};	
+								}; */
+								if (Lifeline_debug_soundalert) then {["hackfix"] remoteExec ["playSound",0]};	
 							};
 						};
 					};
 					if (Debug_LifelineBleedOutTime_not_zero && Lifeline_RevMethod == 2 && lifestate _x != "INCAPACITATED" && alive _x && (_x getVariable ["LifelineBleedOutTime",0]) != 0 && !(_x in Lifeline_Process) 
 					) then {
 						diag_log format ["%1 LifelineBleedOutTime NOT ZERO uuuuuuuuuu BUG GATE uuuuuuuuuu damage:%2 captive:%3 LifelineBleedOutTime:%4'", name _x, isDamageAllowed _x, captive _x, (_x getVariable ["LifelineBleedOutTime",0])];
-						Debug_LifelineBleedOutTime_not_zero = false;
 						[_x] spawn {
 							params ["_x"];
 							sleep 7;
-							Debug_LifelineBleedOutTime_not_zero = true;
 							if (lifestate _x != "INCAPACITATED" && alive _x && (_x getVariable ["LifelineBleedOutTime",0]) != 0 && !(_x in Lifeline_Process) 
 								) then {
 								diag_log format ["%1 BleedOutTime NOT ZERO uuuuuuuuuu BUG uuuuuuuuuu damage:%2 captive:%3 LifelineBleedOutTime:%4'", name _x, isDamageAllowed _x, captive _x, (_x getVariable ["LifelineBleedOutTime",0])];
@@ -174,7 +218,7 @@ params ["_x"];
 								["BleedOutTime_not_zero"] remoteExec ["playSound",Debug_to];
 								// = HACKFIX 
 								_x setVariable ["LifelineBleedOutTime",0,true];
-								if (Lifeline_debug_soundalert) then {["hackfix"] remoteExec ["playSound",2]};	
+								if (Lifeline_debug_soundalert) then {["hackfix"] remoteExec ["playSound",0]};	
 							};
 						};
 					};	
@@ -265,26 +309,6 @@ params ["_x"];
 								};
 						};
 					};		
-					// AssignedMedic has LifelinePairTimeOut=0 				
-					if (alive _x && lifestate _x == "INCAPACITATED" && _x getVariable ["ReviveInProgress",0] == 3 && _x in Lifeline_Process 
-					&& ((_x getVariable ["Lifeline_AssignedMedic",[]] select 0) getVariable ["LifelinePairTimeOut",0] == 0 || lifestate (_x getVariable ["Lifeline_AssignedMedic",[]] select 0) == "INCAPACITATED")) then {
-					diag_log format ["%1 AssignedMedic has LifelinePairTimeOut=0 uuuuuuuuuu BUG GATE uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), (_x getVariable ["ReviveInProgress",0])];
-						[_x] spawn {
-								params ["_x"];
-								sleep 5;
-								if (alive _x && lifestate _x == "INCAPACITATED" && _x getVariable ["ReviveInProgress",0] == 3 && _x in Lifeline_Process 
-								&& ((_x getVariable ["Lifeline_AssignedMedic",[]] select 0) getVariable ["LifelinePairTimeOut",0] == 0 || lifestate (_x getVariable ["Lifeline_AssignedMedic",[]] select 0) == "INCAPACITATED")) then {
-								_secs = (_x getVariable ["LifelinePairTimeOut",0]) - time;
-								diag_log format ["%1 AssignedMedic has LifelinePairTimeOut=0 uuuuuuuuuu BUG uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %4, secs: %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), _secs, (_x getVariable ["ReviveInProgress",0])];
-								diag_log format ["%1 AssignedMedic has LifelinePairTimeOut=0 uuuuuuuuuu BUG uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %4, secs: %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), _secs, (_x getVariable ["ReviveInProgress",0])];
-								diag_log format ["%1 AssignedMedic has LifelinePairTimeOut=0 uuuuuuuuuu BUG uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %4, secs: %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), _secs, (_x getVariable ["ReviveInProgress",0])];
-								_diagtext = "AssignedMedic has LifelinePairTimeOut=0"; if !(local _x) then {[_x,_diagtext] remoteExec ["serverSide_unitstate", 2];[_diagtext] remoteExec ["serverSide_Globals", 2];
-								} else {[_x,_diagtext] call serverSide_unitstate;[_diagtext] call serverSide_Globals;};
-								if (Lifeline_hintsilent) then {hintsilent format ["BUG %1\n%2", name _x,_diagtext]};
-								["siren1"] remoteExec ["playSound",Debug_to];
-								};
-						};
-					};						
 					// Captive state not staying true when down. 				
 					if (alive _x && lifestate _x == "INCAPACITATED" && captive _x == false && Lifeline_RevProtect != 3) then {
 					diag_log format ["%1 Captive turned off when down uuuuuuuuuu BUG GATE uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), (_x getVariable ["ReviveInProgress",0])];
@@ -294,7 +318,8 @@ params ["_x"];
 								if (alive _x && lifestate _x == "INCAPACITATED" && captive _x == false && Lifeline_RevProtect != 3) then {
 								//hackfix here...
 								if (isDedicated) then {
-								 [_x,true] remoteExec ["setCaptive", _x]; 
+								//  [_x,true] remoteExec ["setCaptive", _x]; 
+								 [_x,true] remoteExec ["setCaptive", 0]; 
 								};
 								_secs = (_x getVariable ["LifelinePairTimeOut",0]) - time;
 								diag_log format ["%1 Captive turned off when down uuuuuuuuuu BUG uuuuuuuuuu AssignedMedic:%2, ReviveInProgress %4, secs: %3'", name _x, (_x getVariable ["Lifeline_AssignedMedic",[]] select 0), _secs, (_x getVariable ["ReviveInProgress",0])];

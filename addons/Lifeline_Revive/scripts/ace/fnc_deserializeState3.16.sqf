@@ -18,8 +18,6 @@
  */
 params [["_unit", objNull, [objNull]], ["_json", "{}", [""]], "_myhack"];
 
-
-
 if (isNull _unit) exitWith {};
 if (!local _unit && (isNil "_myhack")) exitWith { ERROR_1("unit [%1] is not local",_unit) };
 
@@ -58,10 +56,7 @@ private _state = [_json] call CBA_fnc_parseJSON;
 {
     _x params ["_var", "_default"];
 
-
     private _value = _state getVariable _x;
-	
-
 
     // Handle wound hashmaps deserialized as CBA_namespaces
     if (typeName _value == "LOCATION") then {
@@ -69,9 +64,7 @@ private _state = [_json] call CBA_fnc_parseJSON;
         private _values = _keys apply {_value getVariable _x};
         _value = _keys createHashMapFromArray _values;
     };
-	
 
-	
 	 // myedit
     if (isNil "_default") then {
         _default = [];
@@ -81,7 +74,6 @@ private _state = [_json] call CBA_fnc_parseJSON;
     if (_value isEqualTo objNull) then {
         _value = _default;
     };
-
 
     _unit setVariable [_var, _value, true];
 } forEach [

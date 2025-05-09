@@ -13,8 +13,15 @@ Lifeline_Incapped = {
 	params ["_unit","_damage","_non_handler"];
 	// _non_handler is a boolean. if true it means incapped function was called NOT through the damage handler.
 
-	if (captive _unit) then {_unit setVariable ["Lifeline_Captive",true,true]} else {_unit setVariable ["Lifeline_Captive",false,true]}; //2025
-	_unit setCaptive true;	
+	_unit setUnconscious true; //MOVED TO TOP OF FUNCTION
+	[_unit, true] remoteExec ["setUnconscious",0]; //MOVED TO TOP OF FUNCTION
+
+	// store captive status (for missions with 'undercover' mode). Only if unit is not a medic at ReviveInProgress = 1 or 2 because it will be captive already
+	if (_unit getVariable ["ReviveInProgress",0] == 0 && _unit getVariable ["Lifeline_RevProtect",0] != 3) then { 
+		_unit setVariable ["Lifeline_Captive",(captive _unit),true]; //2025
+	};
+	// _unit setCaptive true;
+	[_unit, true] remoteExec ["setCaptive", 0];	
 
 	Lifeline_incapacitated pushBackUnique _unit;
 	publicVariable "Lifeline_incapacitated";
@@ -22,8 +29,8 @@ Lifeline_Incapped = {
 	_unit spawn {
 		params ["_unit"];
 		moveOut _unit;
-		[_unit, "UnconsciousReviveArms_A"] remoteExec ["PlayMoveNow", _unit];
-		[_unit, "Unconscious"] remoteExec ["PlayMove", _unit];
+		[_unit, "UnconsciousReviveArms_A"] remoteExec ["PlayMoveNow", 0];
+		[_unit, "Unconscious"] remoteExec ["PlayMove", 0];
 	};
 
 	_randanim = [];
@@ -34,8 +41,8 @@ Lifeline_Incapped = {
 
 	_unit setVariable ["LifelineBleedOutTime", _BleedOut, true]; 
 	_unit setVariable ["Lifeline_Down",true,true];
-	// _unit setUnconscious true;
-	[_unit, true] remoteExec ["setUnconscious",0]; //TEMPOFF
+	// _unit setUnconscious true; //MOVED TO TOP OF FUNCTION
+	// [_unit, true] remoteExec ["setUnconscious",0]; //MOVED TO TOP OF FUNCTION
 	_unit setVariable ["Lifeline_selfheal_progss",false,true]; //clear var if it was in middle of self healing
 	// Lifeline_incapacitated pushBackUnique _unit;
 	// publicVariable "Lifeline_incapacitated";
@@ -76,10 +83,10 @@ Lifeline_Incapped = {
 			// moved here, start countdown display, or distance medic.
 			if ((Lifeline_HUD_distance == true || Lifeline_cntdwn_disply != 0) && isPlayer _unit) then {
 				_seconds = Lifeline_cntdwn_disply;
-				if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false]) && Lifeline_cntdwn_disply != 0 && Lifeline_RevMethod != 3 && Lifeline_HUD_distance == false) then {
-					_unit setVariable ["Lifeline_countdown_start",true,true];
-					[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
-				}; 
+				// if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false]) && Lifeline_cntdwn_disply != 0 && Lifeline_RevMethod != 3 && Lifeline_HUD_distance == false) then {
+				// 	_unit setVariable ["Lifeline_countdown_start",true,true];
+				// 	[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
+				// }; 
 				if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false])) then {
 					_unit setVariable ["Lifeline_countdown_start",true,true];
 					[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
@@ -98,8 +105,8 @@ Lifeline_Incapped = {
 		if (Lifeline_BandageLimit == 1) then {
 			_randanim = selectRandom["Default_A", "Default_B", "Default_C", "Head_A", "Head_B", "Head_C", "Body_A", "Body_B", "Arms_A", "Arms_B", "Arms_C", "Legs_A", "Legs_B"];
 			_randanim = "UnconsciousRevive" + _randanim;			
-			[_unit, _randanim] remoteExec ["PlayMoveNow", _unit];
-			[_unit, "UnconsciousFaceUp"] remoteExec ["PlayMove", _unit];			
+			[_unit, _randanim] remoteExec ["PlayMoveNow", 0];
+			[_unit, "UnconsciousFaceUp"] remoteExec ["PlayMove", 0];			
 		};		
 
 		//== unconcious anim if Bandage Range is multiple
@@ -131,14 +138,27 @@ Lifeline_Incapped = {
 			};
 		};
 
-		[_unit, _randanim] remoteExec ["PlayMoveNow", _unit];							//HERE
-		[_unit, "UnconsciousFaceUp"] remoteExec ["PlayMove", _unit];
+		[_unit, _randanim] remoteExec ["PlayMoveNow", 0];							//HERE
+		[_unit, "UnconsciousFaceUp"] remoteExec ["PlayMove", 0];
 		// added for protection after incap. 
+
+		// new updated 
+		_dmg_trig = dmg_trig;
+		_opfor_not_pvp = false;
+		// if its only PVE and not PVP, and OPFOR is included, then turn off indestructible for OPFOR while reviving.
+		if (Lifeline_Include_OPFOR && Lifeline_PVPstatus == false && ((side group _unit) in Lifeline_OPFOR_Sides)) then {
+			_dmg_trig = true;
+			_opfor_not_pvp = true;
+		};
+
+		diag_log format ["%1 | Lifeline_Include_OPFOR %2 Lifeline_PVPstatus %3 Right Side? %5 Lifeline_OPFOR_Sides %6 !!!!!!!!!!!!!!!!!!!!!!!!!!! DMTG TRIG %4 !!!!!!!!!!!!!!!", 
+		name _unit, Lifeline_Include_OPFOR, Lifeline_PVPstatus, _dmg_trig, (side group _unit) in Lifeline_OPFOR_Sides, Lifeline_OPFOR_Sides];
+
 		if (Lifeline_RevProtect != 3) then {
-			_unit allowDamage dmg_trig;
+			_unit allowDamage dmg_trig;			[_unit, _dmg_trig] remoteExec ["allowDamage", 0];
 			// _unit setCaptive true;//TEMPCAPTIVEOFF
 		};		
-		if (Lifeline_RevProtect != 1) then {
+		if (Lifeline_RevProtect != 1 || _opfor_not_pvp) then {
 		_unit setVariable ["Lifeline_allowdeath",true,true];
 		};
 	}; //[_unit, _damage, _non_handler] spawn {		
@@ -173,13 +193,11 @@ Lifeline_calcbandages = {
 	_torsoGHPD = _pelvis max _abdomen max _diaphrm max _chest max _body;
 	_armsGHPD = _hands max _arms;
 	_legsGHPD = _legs;
-
 	// TEMP CALULATION. instead of max calc like above, add similar body parts (ie add _pelvis + _abdomen). Might not be accurate, but might be useful.
 	_headGHPDtemp = _face + _neck + _head;
 	_torsoGHPDtemp = _pelvis + _abdomen + _diaphrm + _chest + _body;
 	_armsGHPDtemp = _hands + _arms;
 	_legsGHPDtemp = _legs;
-
 	// ========when explosion
 	_otherdamage = _unit getVariable ["otherdamage",0];
 	// _preventdeath = _unit getVariable ["preventdeath",false];
@@ -195,7 +213,6 @@ Lifeline_calcbandages = {
 		_armsGHPD = _armsGHPD + selectRandom[0,1];
 		_legsGHPD = _legsGHPD + selectRandom[0,1];
 		_explosion = true;
-		diag_log format ["%1 ************** MUST BE EXPLOSION **************. OTHER DAMAGE: %2'", name _unit, _otherdamage];
 	};
 
 	if (_headGHPD >= .998) then {_headGHPD = 1};
@@ -211,10 +228,11 @@ Lifeline_calcbandages = {
 	//if only arms and legs are hit then reduce damage
 	// if (_headGHPD < 0.4 && _torsoGHPD < 0.4 && _dmg_unit > 0.9) then {
 	if (_headGHPD < 0.998 && _torsoGHPD < 0.998 && _dmg_unit > 0.9) then {
+		_armlegswitch = true;
+
 		// _dmg_unit =  _dmg_unit * selectRandom[0.7,0.75,0.8,0.85]; 
 		_dmg_unit = _dmg_unit min ( ((0.998 - Lifeline_IncapThres)/2)+Lifeline_IncapThres); // limit damage to no more than half range above Lifeline_IncapThres
 		// _dmg_unit = ( ((0.998 - Lifeline_IncapThres)/3.5)+ Lifeline_IncapThres); // limit damage to no more than half range above Lifeline_IncapThres
-		_armlegswitch = true;
 	};
 	//============================================================================================================
 
@@ -287,7 +305,6 @@ Lifeline_calcbandages = {
 
 	//sometimes after distributing bandages, there are fractions and they throw off total number. This checks difference
 	_diff = _bandg_total - _bandage_no; 
-
 	//this just checks if there are 3 body parts in a row with same number of bandages, or 2 in a row. This is so distributing bandages can be even.
 	_threeeven = false; _twoeven = false;
 	if (count _bandg_total_array >=2) then {
@@ -518,11 +535,11 @@ Lifeline_bandage_addAction = {
 	// moved here, start display
 	if ((Lifeline_HUD_distance == true || Lifeline_cntdwn_disply != 0) && isPlayer _unit) then {
 		_seconds = Lifeline_cntdwn_disply;
-		if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false]) 
-			&& Lifeline_cntdwn_disply != 0 && Lifeline_RevMethod != 3 && Lifeline_HUD_distance == false) then {
-			_unit setVariable ["Lifeline_countdown_start",true,true];
-			[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
-		}; 
+		// if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false]) 
+		// 	&& Lifeline_cntdwn_disply != 0 && Lifeline_RevMethod != 3 && Lifeline_HUD_distance == false) then {
+		// 	_unit setVariable ["Lifeline_countdown_start",true,true];
+		// 	[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
+		// }; 
 		if (lifeState _unit == "INCAPACITATED" && !(_unit getVariable ["Lifeline_countdown_start",false])) then {
 			_unit setVariable ["Lifeline_countdown_start",true,true];
 			[[_unit,_seconds], Lifeline_countdown_timer2] remoteExec ["spawn",_unit, true];
@@ -590,6 +607,12 @@ Lifeline_Medic_Anim_and_Revive = {
 		_pairtimebaby = "LifelinePairTimeOut";			
 		_exit = false;		
 
+		// too lazt to make this a passed on param
+		_opforpve = false;
+		if (Lifeline_PVPstatus == false && Lifeline_Include_OPFOR == true && (side group _medic) in Lifeline_OPFOR_Sides) then {
+			_opforpve = true;
+		};
+
 		if (lifestate _incap == "INCAPACITATED") then {
 
 					if (Lifeline_RevMethod == 1 || Lifeline_BandageLimit == 1) then {
@@ -623,7 +646,6 @@ Lifeline_Medic_Anim_and_Revive = {
 
 					_switch = 0;
 					_unitwounds =  _incap getVariable ["unitwounds",[]];
-					// [format ["%2 | TEXT | UNIT WOUND ARRAY %1 count _unitwounds %3 _bandages %4 ====[851]", _unitwounds, name _incap, count _unitwounds, _bandages]] remoteExec ["diag_log", 2];
 
 					//=====================================================================================================
 
@@ -689,7 +711,7 @@ Lifeline_Medic_Anim_and_Revive = {
 								[_textright,1.3,5,Lifelinetxt2Layer] remoteExec ["Lifeline_display_textright",_incap];																
 							};
 
-							if (lifestate _medic != "INCAPACITATED" && lifestate _incap == "INCAPACITATED" && (alive _incap) && (alive _medic) && (Lifeline_MedicComments)) then {
+							if (lifestate _medic != "INCAPACITATED" && lifestate _incap == "INCAPACITATED" && (alive _incap) && (alive _medic) && (Lifeline_MedicComments && !_opforpve)) then {
 
 								if (_text == "CRITICAL: Perform CPR") then {
 									_part_yo = "CPR";
@@ -751,8 +773,9 @@ Lifeline_Medic_Anim_and_Revive = {
 						}; // end if RevMethod == 2
 
 						//encouragment or "and again" voice sample when body part is repeated for Lifeline_RevMethod 2. Repeated audio samples are not cool. 
+
 						// if (Lifeline_RevMethod == 2) then {
-						if (Lifeline_RevMethod == 2 && (Lifeline_MedicComments) && Lifeline_BandageLimit > 1) then {
+						if (Lifeline_RevMethod == 2 && (Lifeline_MedicComments && !_opforpve) && Lifeline_BandageLimit > 1) then {
 							_repeatrandom = selectRandom[1,2];	
 							if (_part_yo == _notrepeat && _enc_count < 4 && _repeatrandom == 1) then { 
 								[_medic, [_voice+(_encourage select _enc_count), 20, 1, true]] remoteExec ["say3D", 0];
@@ -770,24 +793,6 @@ Lifeline_Medic_Anim_and_Revive = {
 						//turning off the random choice between two animations. Hard setting it here:
 						_crouchreviveanim = 0;
 
-						// if (lifestate _medic != "INCAPACITATED" || (alive _medic) || lifestate _incap == "INCAPACITATED" || (alive _incap)) then { 
-					/* 	if (lifestate _medic != "INCAPACITATED" && alive _medic) then {
-							// _medic setdir (_medic getDir _incap); //TEMPOFF yeha
-							// playsound "forcedirection";
-							_checkdegrees = [_incap,_medic,25] call Lifeline_checkdegrees;
-							if (_checkdegrees == false) then {
-								[_medic,_incap] call Lifeline_align_dir;
-								if (Lifeline_debug_soundalert && Lifeline_Revive_debug) then {playsound "adjust_direction"};
-								if (Lifeline_hintsilent && Lifeline_Revive_debug) then {hint format ["%1 ADJUST DIRECTION ", name _medic]};
-							};			
-							_medic disableAI "ANIM";
-							_checkdegrees = [_incap,_medic,15] call Lifeline_checkdegrees;
-							 // if (_checkdegrees == false) then {
-								// sleep 3;
-								// _medic setDir (_medic getDir _incap);playsound "forcedirection";
-							// };							
-						}; */
-
 						if (_part_yo != "CPR") then {
 								// Kneeling revive - no near enemy
 								// if (isNull _EnemyCloseBy) then {
@@ -795,7 +800,7 @@ Lifeline_Medic_Anim_and_Revive = {
 									// _medic setdir (_medic getDir _incap)+5;/*  */ //SETDIRTEMP
 									if (_crouchreviveanim == 0) then {
 										 // [_medic, "AinvPknlMstpSnonWnonDnon_medic4"] remoteExec ["playMoveNow", _medic];
-										 [_medic, "AinvPknlMstpSnonWnonDnon_medic4"] remoteExec ["playMoveNow", _medic, true];
+										 [_medic, "AinvPknlMstpSnonWnonDnon_medic4"] remoteExec ["playMoveNow", 0, true];
 										 _sleeptime = 4;
 									};
 								};
@@ -808,7 +813,7 @@ Lifeline_Medic_Anim_and_Revive = {
 									if (Lifeline_Anim_Method == 0) then {
 											// _switch = 0; // TEMP - force switch for testing.
 											if (_switch == 0) then {
-												[_medic, "AinvPpneMstpSlayWrflDnon_medicOther"] remoteExec ["playMove", _medic, true]; //CURRENT
+												[_medic, "AinvPpneMstpSlayWrflDnon_medicOther"] remoteExec ["playMove", 0, true]; //CURRENT
 												// [_medic, "ainvppnemstpslaywrfldnon_medicother"] remoteExec ["SwitchMove", _medic];
 												_switch = 1;
 												// sleep 9;
@@ -844,7 +849,7 @@ Lifeline_Medic_Anim_and_Revive = {
 								// _medic setdir (_medic getDir _incap)+5; //SETDIRTEMP
 								// [_medic, (_medic getDir _incap)+5] remoteExec ["setdir", _medic];
 								// [_medic, "AinvPknlMstpSnonWnonDr_medic0"] remoteExec ["playMoveNow", _medic];
-								[_medic, "AinvPknlMstpSnonWnonDr_medic0"] remoteExec ["playMoveNow", _medic, true];
+								[_medic, "AinvPknlMstpSnonWnonDr_medic0"] remoteExec ["playMoveNow", 0, true];
 								_cprcheck = true;
 								_sleeptime = 4;
 							};
@@ -861,7 +866,7 @@ Lifeline_Medic_Anim_and_Revive = {
 						sleep _sleeptime;
 
 						// random verbal encouragement halfway through playMove, for both Lifeline_RevMethod 1 & 2. There is a sample repeat blocker for Lifeline_RevMethod 1.
-						if (Lifeline_MedicComments) then {	
+						if (Lifeline_MedicComments && !_opforpve) then {	
 							_rando = selectRandom[1,2,3,4];
 							if (Lifeline_RevMethod == 1 || Lifeline_BandageLimit == 1) then {
 								_rando = selectRandom[1,2];
@@ -882,7 +887,7 @@ Lifeline_Medic_Anim_and_Revive = {
 
 						if (_part_yo == "CPR") then {	
 							sleep 4;
-							if (Lifeline_MedicComments) then {	
+							if (Lifeline_MedicComments && !_opforpve) then {	
 								[_medic, [_voice+"_pulse1", 20, 1, true]] remoteExec ["say3D", 0];
 							};							
 							// take incap out of CPR animation (dead still)
@@ -890,7 +895,7 @@ Lifeline_Medic_Anim_and_Revive = {
 								params ["_incap"];
 								sleep 5;
 								[_incap, "UnconsciousReviveDefault_C"] remoteExec ["PlayMoveNow", _incap];	   
-								[_incap, "UnconsciousFaceUp"] remoteExec ["PlayMove", _incap];	
+								[_incap, "UnconsciousFaceUp"] remoteExec ["PlayMove", 0];	
 								//local anim 
 								// _incap playMoveNow "UnconsciousReviveDefault_C";
 								// _incap playMove "UnconsciousFaceUp";
@@ -899,8 +904,8 @@ Lifeline_Medic_Anim_and_Revive = {
 
 						// THIS IS HACKED ON MORPHINE AT END 
 						if (_part_yo == "Epinephrine" && _bandages == 1) then {
-							[_incap,_medic,_voice,_colour] spawn {
-							params ["_incap","_medic","_voice","_colour"];
+							[_incap,_medic,_voice,_colour,_opforpve] spawn {
+							params ["_incap","_medic","_voice","_colour","_opforpve"];
 							sleep 2;
 								if (isPlayer _incap && Lifeline_HUD_medical) then {
 									_text = "Inject Morphine       ..extra";
@@ -908,7 +913,7 @@ Lifeline_Medic_Anim_and_Revive = {
 									_textright = format ["<t align='right' size='%3' color='#%1'>%2</t>",_colour,_text, 0.7];
 									[_textright,1.3,5,Lifelinetxt2Layer] remoteExec ["Lifeline_display_textright",_incap];									
 								};
-								if (Lifeline_MedicComments) then {
+								if (Lifeline_MedicComments && !_opforpve) then {
 									[_medic, [_voice+"_morphine1", 20, 1, true]] remoteExec ["say3D", 0];
 								};
 							};	
@@ -974,15 +979,15 @@ Lifeline_Medic_Anim_and_Revive = {
 			_Lifeline_Down = (_incap getVariable ["Lifeline_Down",false]);
 
 				_captive = _incap getVariable ["Lifeline_Captive", false];
-				if !(local _incap) then {
-					[_incap, true] remoteExec ["allowDamage",_incap];
+				// if !(local _incap) then {
+					[_incap, true] remoteExec ["allowDamage",0];
 					// [_incap, false] remoteExec ["setCaptive",_incap];	
-					[_incap, _captive] remoteExec ["setCaptive",_incap];	
-				} else {
+					[_incap, _captive] remoteExec ["setCaptive",0];	
+				/* } else {
 					_incap allowDamage true;
 					// _incap setCaptive false;		
 					_incap setCaptive _captive;		
-				};
+				}; */
 
 		};
 		// waitUntil {lifestate _incap != "INCAPACITATED"}; // if incap is remote player, sometimes there is a delay. Wait until data catches up. // DO NOT USE. 

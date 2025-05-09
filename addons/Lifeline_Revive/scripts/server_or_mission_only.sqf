@@ -1,14 +1,17 @@
 // This file only loads for server version of Lifeline Revive.
 // It declares same variables as the MOD version..
+// The file is included in the mod folder for compatibility of testing.
 // This makes it easier to have same core files for both versions.
 
 diag_log "                                                                                                '"; 
 diag_log "                                                                                                '"; 
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
-diag_log "======================================== Lifeline_Initialize.sqf ==============================================='"; 
+diag_log "======================================== server_or_mission_only.sqf ========================================='"; 
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
+
+Lifeline_mod = false;
 
 	//emulate the MOD version where CBA settings only exist if ACE is loaded or not. 
 	if (Lifeline_ACEcheck_ == false) then {
@@ -37,8 +40,22 @@ diag_log "======================================================================
 	Lifeline_RevMethod = 2; 
 	Lifeline_hintsilent = true;
 	Lifeline_debug_soundalert = true;
-	Lifeline_HUD_names_pairtime = true;
-	Lifeline_Idle_Crouch_Speed = 0; // the speed of a unit to consider "idle". Between 0 - 5.
+
+	Lifeline_StartReviveBETA = true; //Fallback code: old Version of medic journey to incap.  Still not 100% convinced with my new code for the final 20 metres of medic getting to incap. Can fall back on the old cod
+
+	Lifeline_ACE_vanillaFAK = true;
+
+	Lifeline_MASCAL_sides = []; 
+
+	if (Lifeline_ACEcheck_ == true) then {
+
+	if (Lifeline_ACE_vanillaFAK) then {
+		[401, ["ACE_morphine","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_packingBandage","ACE_epinephrine","ACE_adenosine","ACE_splint","ACE_plasmaIV_500","ACE_CableTie"]] call ace_common_fnc_registerItemReplacement;
+	};
+
+};
+
+	// Lifeline_Idle_Crouch_Speed = 0; // the speed of a unit to consider "idle". Between 0 - 5.
 
 	Lifeline_travel_meth = 1; //TEMP TEST. animation method for medic just before arriving at incap. 0 is normal without using stance. 1 is using stance (prone)
 	// 1 = "remoteexec ['addeventhandler', _x] (Default)",
@@ -87,3 +104,4 @@ diag_log "======================================================================
 	publicVariable "Lifeline_Revive_debug";
 	publicVariable "Lifeline_version";
 	publicVariable "Lifeline_cntdwn_disply";
+

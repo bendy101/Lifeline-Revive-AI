@@ -6,6 +6,68 @@ diag_log "====================================== fix_other_revive_systems.sqf ==
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
 
+// _cnt = 1;
+// while {_cnt > 0} do {
+// 	hint format ["WIP countdown: %1", _cnt];
+// 	_cnt = _cnt - 1;
+// 	sleep 1;
+// };
+
+if (hasInterface) then {
+// Wait for mission to start AND player to be in game
+	waitUntil {
+		sleep 0.3;
+		!isNull player && 
+		{time > 0} && 
+		{!isNull (findDisplay 46)} && 
+		{alive player}
+	};
+
+} else {
+	//pause until game started
+	waitUntil {time > 0}; 
+};
+
+// Check if Antistasi mod is loaded
+Lifeline_antistasiLoaded = false;
+
+// Method 1: Check for a specific class from Antistasi
+if (isClass (configFile >> "CfgPatches" >> "A3A_core")) then {
+    Lifeline_antistasiLoaded = true;
+};
+
+// Method 2: Alternative check for Antistasi
+if (!Lifeline_antistasiLoaded && {isClass (configFile >> "A3A" >> "Events")}) then {
+    Lifeline_antistasiLoaded = true;
+};
+
+// Method 3: Check for Antistasi functions
+if (!Lifeline_antistasiLoaded && {!isNil "A3A_fnc_initServer"}) then {
+    Lifeline_antistasiLoaded = true;
+};
+
+if (Lifeline_antistasiLoaded) then {
+    // Your Antistasi compatibility code here
+} else {
+    // Regular initialization code
+};
+
+// wait for players 
+waitUntil {count (allPlayers - entities "HeadlessClient_F") >0};
+
+if (isServer && Lifeline_antistasiLoaded && (((toLower missionName) find "antistasi") != -1) == true) then {
+    waitUntil {
+        !isNil "theBoss" &&
+        !isNil "A3A_Events_fnc_addEventListener" &&
+        !isNil "A3A_fnc_initServer" &&
+        !isNil "A3A_fnc_initClient" &&
+        !isNil "A3A_fnc_patrolInit" &&
+        !isNil "A3A_fnc_loadPlayer" &&
+        !isNil "A3A_fnc_scheduler"
+    };
+    sleep 5;
+};
+
 [] execvm "Lifeline_Revive\scripts\Lifeline_Debugging.sqf"; 
 
 // these functions here for text aligned on right edge of screen according to screen resolution.
@@ -26,7 +88,6 @@ Lifeline_display_textright2 = {
 	[_text,((safeZoneW - 1) * 0.48),_ypos,_sec,0,0,Lifelinetxt1Layer] spawn BIS_fnc_dynamicText;
 };
 
-waitUntil {time > 0}; //pause until game started
 diag_log "===============================START fix_other_revive_systems.sqf==========================='";
 if (isNil "oldACE") then {
 		Lifeline_ACEcheck_ = false;
@@ -154,10 +215,12 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 
 	// FORCE DISABLE BI Revive for Lifeline_RevMethod 2. (this works. I could not get the global turnoff working.)
 	BI_ReviveDetected_ = getMissionConfigValue ["ReviveMode", 0]; 
-	if ((player call BIS_fnc_reviveEnabled) == true) then {BI_ReviveDetected_ = 1};
+	if (hasInterface) then {
+		if ((player call BIS_fnc_reviveEnabled) == true) then {BI_ReviveDetected_ = 1};
+	};
 
 	//remove BI revive
-	if !(isDedicated) then {
+	if !(isDedicated && hasInterface) then {
 		if (player call BIS_fnc_reviveEnabled) then {  
 				[player] call BIS_fnc_disableRevive;
 		};
@@ -190,6 +253,8 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 			  if (BI_RespawnDetected == "GROUP") exitWith {BI_RespawnDetected = 4}; 
 			  if (BI_RespawnDetected == "SIDE") exitWith {BI_RespawnDetected = 5}; 
 			}; 
+
+		if (hasInterface) then {
 
 		 if (typeName BI_RespawnDetected == "SCALAR") then { 
 			  if (BI_RespawnDetected == 0) then { 
@@ -233,17 +298,53 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 			_ypos = 1.3;_sec = 60;
 			[_textformat,_ypos,_sec,Lifelinetxt2Layer] remoteExec ["Lifeline_display_textright", allplayers]; 
 		 };
+		}; // if (hasInterface) then {
 
 // }; // end isNil "oldACE"
 
-//============================ LOAD MAIN FILES =============================
-// if (isNil "oldACE") then {
-	// [] execvm "Lifeline_Revive\scripts\non_ace\Lifeline_DamageHandlerFNC.sqf";
-// };
-[] execvm "Lifeline_Revive\scripts\Lifeline_Global.sqf"; 
-[] execvm "Lifeline_Revive\scripts\Lifeline_ReviveEngine.sqf"; 
+// PVP check
+if (hasInterface) then {
 
-if (Lifeline_Hotwire) then {
-	[] execvm "Lifeline_Revive\scripts\bonus\hotwire_vehicles.sqf"; 
+	player setVariable ["Lifeline_Captive",(captive player),true]; //2025
+
+	playerSide1 = side group player; 
+	_currentSides = missionNamespace getVariable ["Lifeline_PVPcheckSides", []];
+	_currentSides pushBackUnique playerSide1;
+	missionNamespace setVariable ["Lifeline_PVPcheckSides", _currentSides, true];
+	enemyUnitsJa = allUnits select {[playerSide1, side group _x] call BIS_fnc_sideIsEnemy};
+	publicVariable "enemyUnitsJa";
+};
+_playersides = missionNamespace getVariable ["Lifeline_PVPcheckSides", []];
+if (count _playersides > 1) then {
+	Lifeline_PVPstatus = true;
+};
+if (count _playersides == 1) then {
+	Lifeline_PVPstatus = false;
 };
 
+publicVariable "Lifeline_PVPstatus";
+
+_players = allPlayers - entities "HeadlessClient_F";
+
+// if there are only players on one side, then set the side to that side. If its PVP
+// Needs updating to include allies.
+Lifeline_Side = side (_players select 0);publicVariable "Lifeline_Side"; // THIS IS A SINGLE SIDE. NEED TO UPDATE TO ARRAY VERSION  FOR ALLIES.
+Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
+publicVariable "Lifeline_OPFOR_Sides"; // THIS IS AN ARRAY OF ENEMY SIDES
+
+if (Lifeline_Scope == 4) then {
+		[] execvm "Lifeline_Revive\scripts\StartActionMenu.sqf";
+} else {
+
+	//============================ LOAD MAIN FILES =============================
+	// if (isNil "oldACE") then {
+		// [] execvm "Lifeline_Revive\scripts\non_ace\Lifeline_DamageHandlerFNC.sqf";
+	// };
+	[] execvm "Lifeline_Revive\scripts\Lifeline_Global.sqf"; 
+	[] execvm "Lifeline_Revive\scripts\Lifeline_ReviveEngine.sqf"; 
+
+	if (Lifeline_Hotwire) then {
+		[] execvm "Lifeline_Revive\scripts\bonus\hotwire_vehicles.sqf"; 
+	};
+
+};

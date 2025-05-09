@@ -26,7 +26,7 @@
 	};	
 	class teleportmedic {
 		name="teleportmedic";
-		sound[]={"Lifeline_Revive\sound\errormessages\teleportmedic2.ogg", 20, 1, 50};
+		sound[]={"Lifeline_Revive\sound\errormessages\teleportmedic.ogg", 20, 1, 50};
 		titles[] = {};
 	};	
 	class adjust_direction {
@@ -52,6 +52,41 @@
 	class overshoot {
 		name="overshoot";
 		sound[]={"Lifeline_Revive\sound\errormessages\overshoot2.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class west {
+		name="west";
+		sound[]={"Lifeline_Revive\sound\errormessages\west.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class east {
+		name="east";
+		sound[]={"Lifeline_Revive\sound\errormessages\east.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class independent {
+		name="independent";
+		sound[]={"Lifeline_Revive\sound\errormessages\independent.ogg", 20, 1, 50};
+		titles[] = {};
+	};		
+	class west_no_medic {
+		name="west_no_medic";
+		sound[]={"Lifeline_Revive\sound\errormessages\west_no_medic.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class east_no_medic {
+		name="east_no_medic";
+		sound[]={"Lifeline_Revive\sound\errormessages\east_no_medic.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class ind_no_medic {
+		name="ind_no_medic";
+		sound[]={"Lifeline_Revive\sound\errormessages\ind_no_medic.ogg", 20, 1, 50};
+		titles[] = {};
+	};	
+	class unblock_medic {
+		name="unblock_medic";
+		sound[]={"Lifeline_Revive\sound\errormessages\unblock_medic.ogg", 20, 1, 50};
 		titles[] = {};
 	};	
 
@@ -2691,11 +2726,6 @@
 			sound[]={"Lifeline_Revive\sound\errormessages\revivetimeminus.ogg", 10, 1, 50};
 			titles[] = {};
 		};	
-	class terminatespawncycle {
-			name="terminatespawncycle";
-			sound[]={"Lifeline_Revive\sound\errormessages\terminatespawncycle.ogg", 10, 1, 50};
-			titles[] = {};
-		};	
 	class exitrevivetravel {
 			name="exitrevivetravel";
 			sound[]={"Lifeline_Revive\sound\errormessages\exitrevivetravel.ogg", 10, 1, 50};
@@ -2719,6 +2749,21 @@
 	class hackfix {
 			name="hackfix";
 			sound[]={"Lifeline_Revive\sound\errormessages\hackfix2.ogg", 10, 1, 50};
+			titles[] = {};
+	};		
+	class medicstuck1metre {
+			name="medicstuck1metre";
+			sound[]={"Lifeline_Revive\sound\errormessages\medicstuck1metre.ogg", 10, 1, 50};
+			titles[] = {};
+	};	
+	class updatescope {
+			name="updatescope";
+			sound[]={"Lifeline_Revive\sound\errormessages\updatescope.ogg", 10, 1, 50};
+			titles[] = {};
+	};		
+	class no_medic {
+			name="no_medic";
+			sound[]={"Lifeline_Revive\sound\errormessages\no_medic.ogg", 10, 1, 50};
 			titles[] = {};
 	};	
 

@@ -18,8 +18,6 @@
  */
 params [["_unit", objNull, [objNull]], ["_json", "{}", [""]], "_myhack"];
 
-
-
 if (isNull _unit) exitWith {};
 if (!local _unit && (isNil "_myhack")) exitWith { ERROR_1("unit [%1] is not local",_unit) };
 
