@@ -154,7 +154,7 @@
 		};
 		if (_exit == true) exitWith {
 			if (_incap getVariable ["ReviveInProgress",0] == 3) then {; 
-				[[_incap], format ["%1|%2| PlayerRevive456",name _incap,name _player]] remoteExec ["Lifeline_reset2", _incap];
+				[[_incap], format ["%1|%2| PLAYERREVIVE [259]",name _incap,name _player]] remoteExec ["Lifeline_reset2", _incap];
 			};
 		};
 
@@ -181,6 +181,7 @@
 			_incap setVariable ["LifelineBleedOutTime", 0, true];
 			[_incap] spawn {
 			params ["_incap"];	
+				_incap setVariable ["Lifeline_Captive_Delay",true,true];
 				sleep 5;
 				_captivei = _incap getVariable ["Lifeline_Captive", false];
 				// _incap setCaptive false;	
@@ -188,6 +189,7 @@
 				[_incap, true] remoteExec ["allowDamage",0];
 				// [_incap, false] remoteExec ["setCaptive",_incap]; 	
 				[_incap, _captivei] remoteExec ["setCaptive",0]; 	
+				_incap setVariable ["Lifeline_Captive_Delay",false,true];
 			};
 
 			//newline
@@ -199,13 +201,13 @@
 			if (_Lifeline_AssignedMedic_AI isNotEqualTo []) then {
 			};
 			if (_incap getVariable ["ReviveInProgress",0] == 3) then { 
-				[[_incap], format ["%1|%2| PlayerRevive456",name _incap,name _player]] remoteExec ["Lifeline_reset2", _incap];
+				[[_incap], format ["%1|%2| PLAYERREVIVE [315]",name _incap,name _player]] remoteExec ["Lifeline_reset2", _incap];
 			};
 			if (_Lifeline_AssignedMedic_AI isNotEqualTo []) then {
 				// if !(_Lifeline_AssignedMedic_AI getVariable ["Lifeline_reset_trig",false]) then { 
 					// _Lifeline_AssignedMedic_AI setVariable ["Lifeline_reset_trig", true, true];  // to stop double reset.
 				if (_Lifeline_AssignedMedic_AI getVariable ["ReviveInProgress",0] in [1,2]) then {
-					[[_Lifeline_AssignedMedic_AI],format ["%1|%2| AssignedMedic_AI: %3 PlayerRevive456",name _incap,name _player,name _Lifeline_AssignedMedic_AI]] remoteExec ["Lifeline_reset2", _Lifeline_AssignedMedic_AI];
+					[[_Lifeline_AssignedMedic_AI],format ["%1|%2| AssignedMedic_AI: %3 PLAYERREVIVE [322]",name _incap,name _player,name _Lifeline_AssignedMedic_AI]] remoteExec ["Lifeline_reset2", _Lifeline_AssignedMedic_AI];
 				};
 			};
 		};	

@@ -17,7 +17,7 @@ Lifeline_Incapped = {
 	[_unit, true] remoteExec ["setUnconscious",0]; //MOVED TO TOP OF FUNCTION
 
 	// store captive status (for missions with 'undercover' mode). Only if unit is not a medic at ReviveInProgress = 1 or 2 because it will be captive already
-	if (_unit getVariable ["ReviveInProgress",0] == 0 && _unit getVariable ["Lifeline_RevProtect",0] != 3) then { 
+	if (_unit getVariable ["ReviveInProgress",0] == 0 && _unit getVariable ["Lifeline_RevProtect",0] != 3 && !(_unit getVariable ["Lifeline_Captive_Delay",false])) then { 
 		_unit setVariable ["Lifeline_Captive",(captive _unit),true]; //2025
 	};
 	// _unit setCaptive true;
@@ -118,10 +118,12 @@ Lifeline_Incapped = {
 			[_unit,_non_handler] call Lifeline_bandage_addAction; 	
 
 			_quadstored = _unit getVariable ["quadstored",false];
+			
 
 			_unitwounds = _unit getVariable "unitwounds";
 			_bandges = count(_unitwounds);
 			_firstwound = _unitwounds select (_bandges -1) select 0;
+			
 
 			if (_quadstored <=2) then {
 				//anim by most damaged body part
@@ -184,20 +186,24 @@ Lifeline_calcbandages = {
 		// _dmg_unit = selectRandom [0.998,Lifeline_IncapThres + 0.05];
 		// _dmg_unit = Lifeline_IncapThres + 0.05;
 		_dmg_unit = 0.998;
+		
 	};
 
 	//get damage from body parts for bandage distribution
 	_face = _unit getHitPointDamage "hitface";_neck = _unit getHitPointDamage "hitneck";_head = _unit getHitPointDamage "hithead";_pelvis = _unit getHitPointDamage "hitpelvis";_abdomen = _unit getHitPointDamage "hitabdomen";_diaphrm = _unit getHitPointDamage "hitdiaphragm";_chest = _unit getHitPointDamage "hitchest";_body = _unit getHitPointDamage "hitbody";_arms = _unit getHitPointDamage "hitarms";_hands = _unit getHitPointDamage "hithands";_legs = _unit getHitPointDamage "hitlegs";_incap = _unit getHitPointDamage "incapacitated"; 
+	
 
 	_headGHPD = _face max _neck max _head;
 	_torsoGHPD = _pelvis max _abdomen max _diaphrm max _chest max _body;
 	_armsGHPD = _hands max _arms;
 	_legsGHPD = _legs;
+	
 	// TEMP CALULATION. instead of max calc like above, add similar body parts (ie add _pelvis + _abdomen). Might not be accurate, but might be useful.
 	_headGHPDtemp = _face + _neck + _head;
 	_torsoGHPDtemp = _pelvis + _abdomen + _diaphrm + _chest + _body;
 	_armsGHPDtemp = _hands + _arms;
 	_legsGHPDtemp = _legs;
+	
 	// ========when explosion
 	_otherdamage = _unit getVariable ["otherdamage",0];
 	// _preventdeath = _unit getVariable ["preventdeath",false];
@@ -213,12 +219,15 @@ Lifeline_calcbandages = {
 		_armsGHPD = _armsGHPD + selectRandom[0,1];
 		_legsGHPD = _legsGHPD + selectRandom[0,1];
 		_explosion = true;
+		
 	};
 
 	if (_headGHPD >= .998) then {_headGHPD = 1};
 	if (_torsoGHPD >= .998) then {_torsoGHPD = 1};
 	if (_armsGHPD >= .998) then {_armsGHPD = 1};
 	if (_legsGHPD >= .998) then {_legsGHPD = 1};
+
+	
 
 	//============================================================================================================
 
@@ -230,9 +239,12 @@ Lifeline_calcbandages = {
 	if (_headGHPD < 0.998 && _torsoGHPD < 0.998 && _dmg_unit > 0.9) then {
 		_armlegswitch = true;
 
+		
+
 		// _dmg_unit =  _dmg_unit * selectRandom[0.7,0.75,0.8,0.85]; 
 		_dmg_unit = _dmg_unit min ( ((0.998 - Lifeline_IncapThres)/2)+Lifeline_IncapThres); // limit damage to no more than half range above Lifeline_IncapThres
 		// _dmg_unit = ( ((0.998 - Lifeline_IncapThres)/3.5)+ Lifeline_IncapThres); // limit damage to no more than half range above Lifeline_IncapThres
+		
 	};
 	//============================================================================================================
 
@@ -254,13 +266,16 @@ Lifeline_calcbandages = {
 	_damagesubstr = _damagesubstr + 0.000001; //added a tiny fraction - sometimes the calculation is a fraction off due to rounding errors. This fixes it.
 
 	//=========================================================================================
+    
 
 	//if only arms / legs are hit and bandages calculated are more than bullet hits then reduce bandages to number of bullet hits.
 	if (_headGHPD < 0.998 && _torsoGHPD < 0.998 && _armlegswitch == false && ((_bandage_no > _bullethits && _bullethits > 0)) ) then { // better calculation. e.g. 5 shots sometimes only have 1 bandage, but its still minor damage.
 		if (_bullethits > Lifeline_BandageLimit) then {
 			_bandage_no = Lifeline_BandageLimit;
+			
 		} else {
 			_bandage_no = _bullethits;
+			
 		};
 	};
 
@@ -294,6 +309,7 @@ Lifeline_calcbandages = {
 	// _dmg_total_array = [[_headGHPD, "head"], [_torsoGHPD, "tors"], [_armsGHPD, "arms"], [_legsGHPD, "legs"]]; 
 	_dmg_total_array = [[_headGHPD, "Head:"], [_torsoGHPD, "Torso:"], [_armsGHPD, "Arm:"], [_legsGHPD, "Leg:"]]; 
 	_dmg_total_array sort false;
+	
 
 	 // Loop through the array and accumulate the number of bandages
 	_bandg_total = 0;
@@ -301,10 +317,12 @@ Lifeline_calcbandages = {
 
 	//test diff sorting methods
 	_bandg_total_array sort false;
+	
 	// _bandg_total_array = [_bandg_total_array, [], {_x select 2}, "DESCEND"] call BIS_fnc_sortBy;
 
 	//sometimes after distributing bandages, there are fractions and they throw off total number. This checks difference
 	_diff = _bandg_total - _bandage_no; 
+	
 	//this just checks if there are 3 body parts in a row with same number of bandages, or 2 in a row. This is so distributing bandages can be even.
 	_threeeven = false; _twoeven = false;
 	if (count _bandg_total_array >=2) then {
@@ -346,6 +364,7 @@ Lifeline_calcbandages = {
 	if (_diff !=0 ) then {
 		_bandg_total = 0;
 		{_bandg_total = _bandg_total + (_x select 0);} forEach _bandg_total_array;
+		
 	};
 	//============================================================
 
@@ -362,6 +381,7 @@ Lifeline_calcbandages = {
 Lifeline_bandage_text = {
 	params ["_bandage_no", "_unit", "_bandg_total_array", "_cpr", "_non_handler"];
 
+	
 	_pallet04 = ["F94545","F97166","F99E86","F9CAA7"];
 
 	_colour = _pallet04; //just replace variable here
@@ -486,6 +506,7 @@ Lifeline_bandage_text = {
 		_cpr = false;
 	}; // while do
 
+	
 	_unit setVariable ["unitwounds", _unitwounds, true];
 };
 
@@ -493,11 +514,14 @@ Lifeline_bandage_addAction = {
 	params ["_unit","_non_handler"];
 
 	_dmgyo = damage _unit;
+	
 	_calcbandages = [_unit,_dmgyo] call Lifeline_calcbandages;
 	_bandageno = _calcbandages select 0;											
 	_damagesubstr = _calcbandages select 2;
 	_bandg_total_array = _calcbandages select 3;
 	_bandage_no = _bandageno; // this is just temp due to laziness 
+
+	
 
 	_unit setVariable ["damagesubstr", _damagesubstr, true];
 
@@ -510,6 +534,7 @@ Lifeline_bandage_addAction = {
 		_randomNumber = 100 //save CPU maybe? probably not lol.
 		} else {
 		_randomNumber = floor (random 101);
+		
 	};		
 	if (Lifeline_CPR_likelihood > 0) then {
 		if ((Lifeline_InstantDeath == 0 && damage _unit >= 0.998 && _randomNumber <= Lifeline_CPR_likelihood) || (Lifeline_InstantDeath == 1 && damage _unit > 0.97 && _randomNumber <= Lifeline_CPR_likelihood) || (Lifeline_InstantDeath == 2 && damage _unit > 0.97 )) then {											
@@ -550,6 +575,8 @@ Lifeline_bandage_addAction = {
 
 	[_unit] call Lifeline_text_addAction;
 
+	
+
 };
 
 Lifeline_text_addAction = {
@@ -560,10 +587,13 @@ Lifeline_text_addAction = {
 	_unit setVariable ["num_bandages",_bandageno,true];
 	_text = _unit getVariable "unitwounds" select (_bandageno -1) select 0;
 	_colour = _unit getVariable "unitwounds" select (_bandageno -1) select 1;
+	
 
 	if (_text != "CRITICAL: Perform CPR") then {
 	_text = format ["%1       ..%2", _text, _bandageno];
 	};
+
+	
 
 		// === OLD METHOD IF. Using "" to replace action menu when not used.
 	if !(_unit getVariable ["Lifeline_RevActionAdded",false]) then { 
@@ -613,6 +643,8 @@ Lifeline_Medic_Anim_and_Revive = {
 			_opforpve = true;
 		};
 
+		
+
 		if (lifestate _incap == "INCAPACITATED") then {
 
 					if (Lifeline_RevMethod == 1 || Lifeline_BandageLimit == 1) then {
@@ -626,6 +658,7 @@ Lifeline_Medic_Anim_and_Revive = {
 					if (_bandages == 0 && Lifeline_RevMethod == 2 && Lifeline_BandageLimit > 1) then {
 						_count = 7;
 						while {_count > 0} do {
+						
 						_incap setVariable [_pairtimebaby, (_incap getvariable _pairtimebaby) + 1, true]; // add 5 seconds to incap revivetimer
 						_medic setVariable [_pairtimebaby, (_medic getvariable _pairtimebaby) + 1, true]; // add 5 seconds to medic revivetimer
 						_incap setVariable [_bleedoutbaby, (_incap getvariable _bleedoutbaby) + 1, true];  
@@ -639,13 +672,18 @@ Lifeline_Medic_Anim_and_Revive = {
 					if (_exit == true) exitWith {
 						// if (Lifeline_debug_soundalert) then {["siren1"] remoteExec ["playSound",2]};
 						hintsilent format ["NO BANDAGE DATA: %1\nEXIT BEFORE BANDAGE ANIM", name _incap];
+						
 					};
 
 					// _damagesubtract = _incap getVariable "damagesubstr"; // IS THIS FUCKING RIGHT? THE DAMAGE TO SUBRACT SHOULD JUST BE TOTAL DAMAGE DIVIDED BY TOTAL BANDAGES
 					_damagesubtract = damage _incap / _bandages;
+					
 
 					_switch = 0;
+					
 					_unitwounds =  _incap getVariable ["unitwounds",[]];
+
+					
 
 					//=====================================================================================================
 
@@ -663,6 +701,7 @@ Lifeline_Medic_Anim_and_Revive = {
 					_crouchreviveanim = selectRandom [0,1]; // this is to randomize between two different crouch revive animations.
 
 					// ================= BANDAGE ACTION LOOP ===============================================================
+					
 					_firstimetrigg = false; // TEMP FOR NEW ANIMATION
 					// _tempswitch = false;
 
@@ -681,6 +720,8 @@ Lifeline_Medic_Anim_and_Revive = {
 						if (lifestate _medic == "INCAPACITATED" || !(alive _medic)) exitWith {};
 						if (lifestate _incap != "INCAPACITATED" || !(alive _incap)) exitWith {};
 
+						
+
 						//============== ADD MORE TIMER. added to increase revive time limit on each loop pass ==============================================================================
 						_timelimitincap = (_incap getvariable _pairtimebaby);
 						_timelimitmedic = (_medic getvariable _pairtimebaby);
@@ -693,6 +734,7 @@ Lifeline_Medic_Anim_and_Revive = {
 						if (_bandages > 0 && Lifeline_RevMethod == 2 && Lifeline_BandageLimit > 1) then {
 
 							_text = _incap getVariable "unitwounds" select (_bandages -1) select 0;
+							
 							_colour = _incap getVariable "unitwounds" select (_bandages -1) select 1;
 							_actionId = _incap getVariable ["Lifeline_ActionMenuWounds",0];
 							//new method
@@ -710,12 +752,16 @@ Lifeline_Medic_Anim_and_Revive = {
 								_textright = format ["<t align='right' size='%3' color='#%1'>%2</t>",_colour,_text, 0.7];
 								[_textright,1.3,5,Lifelinetxt2Layer] remoteExec ["Lifeline_display_textright",_incap];																
 							};
+							
 
 							if (lifestate _medic != "INCAPACITATED" && lifestate _incap == "INCAPACITATED" && (alive _incap) && (alive _medic) && (Lifeline_MedicComments && !_opforpve)) then {
+
+								
 
 								if (_text == "CRITICAL: Perform CPR") then {
 									_part_yo = "CPR";
 									if (_part_yo != _notrepeat) then {
+										
 										[_medic, [_voice+"_CPR1", 20, 1, true]] remoteExec ["say3D", 0];
 									};
 								};
@@ -723,24 +769,28 @@ Lifeline_Medic_Anim_and_Revive = {
 									_part_yo = "head";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_head1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};
 								};		
 								if ((_text find "Torso:") == 0) then {
 									_part_yo = "torso";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_torso1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};
 								};	
 								if ((_text find "Arm:") == 0) then {
 									_part_yo = selectRandom["_leftarm1","_rightarm1"];
 									if (_part_yo != _notrepeat && (_text find "Fracture") == -1) then {
 										[_medic, [_voice+_part_yo, 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};									
 								};
 								if ((_text find "Leg:") == 0) then {
 									_part_yo = selectRandom["_leftleg1","_rightleg1"];
 									if (_part_yo != _notrepeat && (_text find "Fracture") == -1) then {
 										[_medic, [_voice+_part_yo, 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};		
 								};
 								if ((_text find "Fracture") != -1 && _part_yo != "torso" && _part_yo != "head") then { // only arms and legs
@@ -748,24 +798,28 @@ Lifeline_Medic_Anim_and_Revive = {
 									_part_yo = "fracture";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_fracture1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};
 								};
 								if ((_text find "Inject Blood IV") == 0) then {
 									_part_yo = "blood";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_giveblood1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};
 								};
 								if ((_text find "Inject Epinephrine") == 0) then {
 									_part_yo = "Epinephrine";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_giveEpinephrine1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};	
 								};
 								if ((_text find "Inject Morphine") == 0) then {
 									_part_yo = "Morphine";
 									if (_part_yo != _notrepeat) then {
 										[_medic, [_voice+"_morphine1", 20, 1, true]] remoteExec ["say3D", 0];
+										
 									};	
 								};
 							}; // end if not incapped
@@ -774,21 +828,27 @@ Lifeline_Medic_Anim_and_Revive = {
 
 						//encouragment or "and again" voice sample when body part is repeated for Lifeline_RevMethod 2. Repeated audio samples are not cool. 
 
+						
 						// if (Lifeline_RevMethod == 2) then {
 						if (Lifeline_RevMethod == 2 && (Lifeline_MedicComments && !_opforpve) && Lifeline_BandageLimit > 1) then {
 							_repeatrandom = selectRandom[1,2];	
+							
 							if (_part_yo == _notrepeat && _enc_count < 4 && _repeatrandom == 1) then { 
 								[_medic, [_voice+(_encourage select _enc_count), 20, 1, true]] remoteExec ["say3D", 0];
+								
 								if (_enc_count == 3) then {_enc_count = 0} else {_enc_count = _enc_count + 1};
 							};
 							if (_part_yo == _notrepeat && _repeatrandom == 2) then { 
+								
 								[_medic, [_voice+"_andagain"+(str _againswitch), 20, 1, true]] remoteExec ["say3D", 0];
+								
 								if (_againswitch == 1) then { _againswitch = 2; } else { _againswitch = 1; };
 							};	
 							_notrepeat = _part_yo;
 						};
 
 						_sleeptime = 0;
+						
 
 						//turning off the random choice between two animations. Hard setting it here:
 						_crouchreviveanim = 0;
@@ -814,12 +874,14 @@ Lifeline_Medic_Anim_and_Revive = {
 											// _switch = 0; // TEMP - force switch for testing.
 											if (_switch == 0) then {
 												[_medic, "AinvPpneMstpSlayWrflDnon_medicOther"] remoteExec ["playMove", 0, true]; //CURRENT
+												
 												// [_medic, "ainvppnemstpslaywrfldnon_medicother"] remoteExec ["SwitchMove", _medic];
 												_switch = 1;
 												// sleep 9;
 												_sleeptime = 4.5;
 											} else {
 												[_medic, "AinvPpneMstpSlayWrflDnon_medicOther"] remoteExec ["SwitchMove", 0, true]; //CURRENT
+												
 												_sleeptime = 4.75;
 												// sleep 9.5;
 											}; 
@@ -851,6 +913,7 @@ Lifeline_Medic_Anim_and_Revive = {
 								// [_medic, "AinvPknlMstpSnonWnonDr_medic0"] remoteExec ["playMoveNow", _medic];
 								[_medic, "AinvPknlMstpSnonWnonDr_medic0"] remoteExec ["playMoveNow", 0, true];
 								_cprcheck = true;
+								
 								_sleeptime = 4;
 							};
 						};
@@ -865,29 +928,40 @@ Lifeline_Medic_Anim_and_Revive = {
 
 						sleep _sleeptime;
 
+						
+
 						// random verbal encouragement halfway through playMove, for both Lifeline_RevMethod 1 & 2. There is a sample repeat blocker for Lifeline_RevMethod 1.
 						if (Lifeline_MedicComments && !_opforpve) then {	
 							_rando = selectRandom[1,2,3,4];
 							if (Lifeline_RevMethod == 1 || Lifeline_BandageLimit == 1) then {
 								_rando = selectRandom[1,2];
 								_enc_count = selectRandom[0,1,2,3];
+								
 								//this will stop a repeated sample from the greeting (some shared samples in arrival greeting)
 								while {(_enc_count == 0 && _B == "5") || (_enc_count == 1 && _B == "2")} do {
+									
 									_enc_count = selectRandom[0,1,2,3];
 								};
+								
 							};
 
+							
 							if (_rando == 1) then { 
 								[_medic, [_voice+(_encourage select _enc_count), 20, 1, true]] remoteExec ["say3D", 0];
+								
 								if (_enc_count == 3) then {_enc_count = 0} else {_enc_count = _enc_count + 1};
+								
 							};
 						};
 
 						sleep _sleeptime;
 
+						
+
 						if (_part_yo == "CPR") then {	
 							sleep 4;
 							if (Lifeline_MedicComments && !_opforpve) then {	
+								
 								[_medic, [_voice+"_pulse1", 20, 1, true]] remoteExec ["say3D", 0];
 							};							
 							// take incap out of CPR animation (dead still)
@@ -902,6 +976,8 @@ Lifeline_Medic_Anim_and_Revive = {
 							};
 						};
 
+						
+
 						// THIS IS HACKED ON MORPHINE AT END 
 						if (_part_yo == "Epinephrine" && _bandages == 1) then {
 							[_incap,_medic,_voice,_colour,_opforpve] spawn {
@@ -915,6 +991,7 @@ Lifeline_Medic_Anim_and_Revive = {
 								};
 								if (Lifeline_MedicComments && !_opforpve) then {
 									[_medic, [_voice+"_morphine1", 20, 1, true]] remoteExec ["say3D", 0];
+									
 								};
 							};	
 							sleep 2;
@@ -924,6 +1001,7 @@ Lifeline_Medic_Anim_and_Revive = {
 
 						_newdamage = damage _incap - _damagesubtract;
 						if (_newdamage < 0.2) then {
+							
 							// _incap setDamage 0.2;
 							_newdamage = 0.2;						
 						};
@@ -933,8 +1011,10 @@ Lifeline_Medic_Anim_and_Revive = {
 						_incap setVariable ["num_bandages",_bandages,true];	
 
 						// NEW TEST for deleting from array
+						
 						// _unitwounds = _unitwounds - [(_unitwounds select (_bandages))]; // WRONGGG
 						_unitwounds deleteAt _bandages;
+						
 						_incap setVariable ["unitwounds",_unitwounds,true];
 
 					}; // end while ================================================ END BANDAGE LOOP ========================================

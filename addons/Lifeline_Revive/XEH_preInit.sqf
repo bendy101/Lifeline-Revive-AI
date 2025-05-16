@@ -1,5 +1,5 @@
 Lifeline_Version = "Lifeline Revive AI";
-Lifeline_Version_no = "2025-05-10 07:08:15";
+Lifeline_Version_no = "2025-05-03 19:04:55";
 Lifeline_mod = true;
 
   // these diag_logs have a single space character at start for my regex clean later
@@ -205,13 +205,37 @@ New method: no weapon pulled out between bandages - but due to arma bugs - there
 
    //MEDIC SELECTION 
 // ["Lifeline_Blacklist_MedicOnly", "CHECKBOX", ["Arma Medics Only", "Only designated medics can revive\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], false,true] call CBA_fnc_addSetting;
-// ["Lifeline_Medic_Limit", "LIST",     ["Limits.",  "Number of Medics per Group"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6,7,8], ["Any", "Any in Group", "1 medic per Group", "2 medics per Group", "3 medics per Group", "20% of Group", "50% of Group", "80% of Group"], 0],true] call CBA_fnc_addSetting;
+["Lifeline_Medic_Limit", "LIST",     ["Number of Medics",  "This is to keep combat effectiveness up.
+	Limit maximum number of medics in action at any one time.
+	Less medics in action = more firepower.
+
+- No limits. Any in Scope ('Scope' is set above). Other groups units can revive your team.
+- Any amount from Group. Incapacated will only get medics from their group.
+- 1 per Group
+- 2 per Group
+- 3 per Group
+- 1 per Group + any not under fire
+- 2 per Group + any not under fire
+- 3 per Group + any not under fire
+
+ *Note: these limits are unblocked when MASCAL (mass casualty) has happened.
+
+'1 per Group + any not under fire' means 1 medic always per group, plus any other units not under fire.
+ 'fire' is supression > 0.1
+
+"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["No limits. Any in Scope", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 1],true] call CBA_fnc_addSetting;
+["Lifeline_Dedicated_Medic", "CHECKBOX", ["Always Use Vanilla Arma 3 Medic", "Always force the vanilla Arma 3 medic to be used.
+	If you want only the vanilla Arma 3 medic in action, then set this to 'true' and choose '1' from 'Number of Medics' above.
+
+	*Note if there is no vanilla Arma 3 medic in the squad, then the trait will be set to last unit in squad.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+
 ["Lifeline_LimitDist", "SLIDER",   ["Distance Limit", "Only units within this distance will be become a medic.\nThis means distance from the incap.\nIn metres.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], [200, 4000, 1000, 0],true,{Lifeline_LimitDist = round(_this)}] call CBA_fnc_addSetting;
-["Lifeline_Blacklist_Mounted_Weapons", "CHECKBOX", ["Mounted Weapons - Blacklist", "Units with mounted weapons cannot become medics.\nThis includes gunners of vehicles.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
-["Lifeline_Blacklist_Drivers", "CHECKBOX", ["Drivers and Pilots - Blacklist", "Units driving or piloting a machine cannot become medics.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
-["Lifeline_Blacklist_Armour", "CHECKBOX", ["Armour - Blacklist", "Units in tanks and armour cannot become medics\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
-["Lifeline_Blacklist_Air", "CHECKBOX", ["Air - Blacklist", "Units in helicopters/planes cannot become medics.\nThey do not need to be driving or a pilot.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
-["Lifeline_Blacklist_Car", "CHECKBOX", ["Cars or Trucks - Blacklist", "Units in vehicles like cars or trucks cannot become medics\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], false,true] call CBA_fnc_addSetting;
+["Lifeline_Blacklist_Mounted_Weapons", "CHECKBOX", ["Mounted Weapons - Blacklist", "Units with mounted weapons cannot become medics.\nThis includes gunners of vehicles.\n\n*Note: blacklist is unblocked when MASCAL (mass casualty) has happened.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+["Lifeline_Blacklist_Drivers", "CHECKBOX", ["Drivers and Pilots - Blacklist", "Units driving or piloting a machine cannot become medics.\n\n*Note: blacklist is unblocked when MASCAL (mass casualty) has happened.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+["Lifeline_Blacklist_Armour", "CHECKBOX", ["Armour - Blacklist", "Units in tanks and armour cannot become medics\n\n*Note: blacklist is unblocked when MASCAL (mass casualty) has happened.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+["Lifeline_Blacklist_Air", "CHECKBOX", ["Air - Blacklist", "Units in helicopters/planes cannot become medics.\nThey do not need to be driving or a pilot.\n\n*Note: blacklist is unblocked when MASCAL (mass casualty) has happened.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+["Lifeline_Blacklist_Car", "CHECKBOX", ["Cars or Trucks - Blacklist", "Units in vehicles like cars or trucks cannot become medics\n\n*Note: blacklist is unblocked when MASCAL (mass casualty) has happened.\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
+// ["Lifeline_MASCAL_unblock", "CHECKBOX", ["Unblock Limits when MASCAL", "When all units are down (MASCAL) you have a last chance to get a medic\nby unblocking the blacklist and number limits\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], true,true] call CBA_fnc_addSetting;
 
 // ["Lifeline_VIP_PLayer_MASCAL", "CHECKBOX", ["MASCAL unblock blacklist", "When all units are down (MASCAL) you can have a last chance to get a medic\nby unblocking the blacklist\n\n"], ["Lifeline Revive AI","MEDIC SELECTION"], false,true] call CBA_fnc_addSetting;
 

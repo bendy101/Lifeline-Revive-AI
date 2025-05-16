@@ -88,6 +88,11 @@
 		name="unblock_medic";
 		sound[]={"Lifeline_Revive\sound\errormessages\unblock_medic.ogg", 20, 1, 50};
 		titles[] = {};
+	};		
+	class mascalya	 {
+		name="mascalya";
+		sound[]={"Lifeline_Revive\sound\errormessages\mascal.ogg", 20, 1, 50};
+		titles[] = {};
 	};	
 
 //===================== Dave		

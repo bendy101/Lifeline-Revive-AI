@@ -21,7 +21,7 @@ ace_medical_ai_enabledFor = 0; // disable the ACE medical ai
 				
 
 				// store captive status (for missions with 'undercover' mode). Only if unit is not a medic at ReviveInProgress = 1 or 2 because it will be captive already
-				if (_unit getVariable ["ReviveInProgress",0] == 0 && _unit getVariable ["Lifeline_RevProtect",0] != 3) then { 
+				if (_unit getVariable ["ReviveInProgress",0] == 0 && _unit getVariable ["Lifeline_RevProtect",0] != 3 && !(_unit getVariable ["Lifeline_Captive_Delay",false])) then { 
 					_unit setVariable ["Lifeline_Captive",(captive _unit),true]; //2025
 				};
 				_unit setVariable ["Lifeline_selfheal_progss",false,true]; //clear var if it was in middle of self healing
@@ -1287,7 +1287,7 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 			};
 
 			_cprcount = _cprcount + 1;
-			[_medic, _incap, "RightArm", "Epinephrine", objNull, "ACE_epinephrine"] call ace_medical_treatment_fnc_medication;
+			// [_medic, _incap, "RightArm", "Epinephrine", objNull, "ACE_epinephrine"] call ace_medical_treatment_fnc_medication; // turn off
 			sleep 2;
 			[_medic, _incap] call ace_medical_treatment_fnc_cprStart;
 			 sleep 10;
@@ -1376,7 +1376,9 @@ params ["_incap", "_medic","_EnemyCloseBy","_voice"];
 							sleep 9.5;
 						}; 
 					};	
-					[_medic, _incap, "RightArm", "Epinephrine", objNull, "ACE_epinephrine"] call ace_medical_treatment_fnc_medication;
+					if (_counter == 1) then { // only 1 EPI
+						[_medic, _incap, "RightArm", "Epinephrine", objNull, "ACE_epinephrine"] call ace_medical_treatment_fnc_medication;
+					};
 				};		
 
 				if (lifestate _incap != "INCAPACITATED") exitWith {};
@@ -1424,6 +1426,8 @@ Lifeline_SelfHeal_ACE = {
 params ["_unit"];
 	if (alive _unit && lifestate _unit != "INCAPACITATED" && !isPlayer _unit) then {
 
+		
+
 		// _unit setVariable ["Lifeline_selfheal_progss",true,true]; // in original Lifeline_SelfHeal now
 		
 		// Get Nearest Enemy to Incap unit
@@ -1468,12 +1472,14 @@ params ["_unit"];
 						if ((isnull _EnemyCloseBy or _unit distance _EnemyCloseBy >100) && count _value1 == 1) then {
 							// [_unit,"AinvPknlMstpSlayWrflDnon_medic"] remoteExec ["playMoveNow", _unit];
 							// 
+							if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
 							
 							[_unit,"AinvPknlMstpSlayWrflDnon_medic"] remoteExec ["playMoveNow",0];
 							sleep 5;			
 						} else {
 							// [_unit,"ainvppnemstpslaywrfldnon_medic"] remoteExec ["playMoveNow",_unit];
 							 // 
+							 if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
 							 
 							[_unit,"AinvPpneMstpSlayWnonDnon_medicIn"] remoteExec ["playMoveNow",0];
 							sleep 5;	
@@ -1585,6 +1591,8 @@ params ["_unit"];
 			 _pain = _json getVariable ["ace_medical_pain", false];
 			 
 		};
+
+		if (lifeState _unit == "INCAPACITATED" || !alive _unit) exitWith { };
 
 		[_unit, "RightArm", "Morphine"] call ace_medical_treatment_fnc_medicationLocal;
 
