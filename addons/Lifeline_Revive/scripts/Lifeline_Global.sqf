@@ -2507,7 +2507,8 @@ Lifeline_StartReviveOLD = {
 	_linenumber = "0744";
 	_exit = [_incap,_medic,"EXIT REVIVE TRAVEL [root]",_linenumber] call Lifeline_exit_travel;
 
-	_voice = _medic getVariable "Lifeline_Voice";
+	// _voice = _medic getVariable "Lifeline_Voice";
+	_voice = _medic getVariable ["Lifeline_Voice", selectRandom Lifeline_UnitVoices]; 
 	_B = "";
 	_EnemyCloseBy = objNull;	
 	_yelmark = objNull;	
