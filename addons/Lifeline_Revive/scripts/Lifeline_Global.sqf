@@ -522,15 +522,23 @@ Lifeline_reset2 = {
 					_x allowDamage true;					
 					_x setCaptive _captive; 
 					[_x, true] remoteExec ["allowDamage",0];
-					// [_x, false] remoteExec ["setCaptive",_x];
-					// [_x, _captive] remoteExec ["setCaptive",_x];
 					[_x, _captive] remoteExec ["setCaptive",0];
 				//  } else {
-					_x allowDamage true;
+					// _x allowDamage true;
 					// _x setCaptive false; 
-					_x setCaptive _captive; 
+					// _x setCaptive _captive; 
 				// };	 
 			//    }; //endspawn
+					/* [_x,_captive] spawn {
+						params ["_unit","_captive"];	
+						_unit setVariable ["Lifeline_Captive_Delay",true,true];
+						sleep 5;
+						if (_unit getVariable ["ReviveInProgress",0] != 2) then { 
+							_unit setCaptive _captive; 
+							[_unit, _captive] remoteExec ["setCaptive",0];	 
+							_unit setVariable ["Lifeline_Captive_Delay",false,true];
+						};
+					}; */
 			};	
 			
 		};	//if (alive _x) then 
@@ -1245,6 +1253,7 @@ Lifeline_StartRevive = {
 
 
 			// DISTANCE RADIUS <=8 || 	// DISTANCE RADIUS <=15
+			
 
 			// 
 			waitUntil {
@@ -1296,6 +1305,7 @@ Lifeline_StartRevive = {
 
 
 			// DISTANCE RADIUS <=6 || 	// DISTANCE RADIUS <=8
+			
 
 			waitUntil {
 				
@@ -1427,6 +1437,7 @@ Lifeline_StartRevive = {
 			// [_medic,_newrevpos] call Lifeline_align_dir;
 
 			// DISTANCE RADIUS <=4
+			
 
 			waitUntil {
 				// sleep 0.1;
@@ -1556,6 +1567,7 @@ Lifeline_StartRevive = {
 			_waitcount = 5; // 5 seconds, 25 times 0.2
 
 			// DISTANCE RADIUS <=2
+			
 
 			waitUntil {
 				// _medic playMoveNow _animMove;
@@ -1662,7 +1674,8 @@ Lifeline_StartRevive = {
 			_one = 1;
 			_waitcount = 5; 
 
-			// DISTANCE RADIUS <=1		
+			// DISTANCE RADIUS <=1	
+			
 
 			waitUntil {
 				sleep 0.2;
@@ -2842,7 +2855,7 @@ Lifeline_StartReviveOLD = {
 
 
 			// DISTANCE RADIUS <=10 || 	// DISTANCE RADIUS <=15
-
+			
 			// _revivePos = [_incap, _medic, _distnextto] call Lifeline_POSnexttoincap;	
 			// 
 			waitUntil {
@@ -2869,6 +2882,7 @@ Lifeline_StartReviveOLD = {
 
 
 			// DISTANCE RADIUS <=8 || 	// DISTANCE RADIUS <=15
+			
 
 			// 
 			waitUntil {
@@ -2920,6 +2934,7 @@ Lifeline_StartReviveOLD = {
 
 
 			// DISTANCE RADIUS <=6 || 	// DISTANCE RADIUS <=8
+			
 
 			waitUntil {
 				
@@ -3050,6 +3065,7 @@ Lifeline_StartReviveOLD = {
 			// [_medic,_newrevpos] call Lifeline_align_dir;
 
 			// DISTANCE RADIUS <=4
+			
 
 			waitUntil {
 				// sleep 0.1;
@@ -3148,6 +3164,7 @@ Lifeline_StartReviveOLD = {
 			_diag_texty2 = "";
 
 			// DISTANCE RADIUS <=2
+			
 
 			waitUntil {
 				// _medic playMoveNow _animMove;
@@ -3210,6 +3227,7 @@ Lifeline_StartReviveOLD = {
 			_trig1 = false;
 
 			// DISTANCE RADIUS <=1
+			
 
 			waitUntil {
 				sleep 0.2;

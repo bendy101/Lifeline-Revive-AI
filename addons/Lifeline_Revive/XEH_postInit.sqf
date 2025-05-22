@@ -46,6 +46,15 @@ if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {
 	diag_log "=====kkkkkkkkkkkkkkkkkkkkkkkkkkk NO ACE MEDICAL kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk===='";
 };
 
+//check for SOG AI 
+if (isClass (configFile >> "cfgPatches" >> "JBOY_SOGAI_mod")) then {
+	diag_log "mission init.sqf +++++++++++ SOG AI DETECTED +++++++++++++++'";
+	[] spawn {
+		waitUntil {(!isNil "jboy_medicStart")};
+		jboy_medicStart = compile preprocessFileLineNumbers ("");
+	};
+};
+
 taofoldingmap = 0;
 
 if (isClass (configFile >> "cfgPatches" >> "htfm")) then {

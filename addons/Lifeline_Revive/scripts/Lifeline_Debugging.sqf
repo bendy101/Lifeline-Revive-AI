@@ -102,6 +102,7 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 			diag_log format ["!!!! Lifeline_IncapThres | %1 !!!!'", Lifeline_IncapThres];
 			diag_log format ["!!!! Lifeline_Fatigue | %1 !!!!'", Lifeline_Fatigue];
 			diag_log format ["!!!! Lifeline_cntdwn_disply | %1 !!!!'", Lifeline_cntdwn_disply];
+			diag_log format ["!!!! Lifeline_InstantDeathOPFOR | %1 !!!!'", Lifeline_InstantDeathOPFOR];
 		};
 		diag_log format ["!!!! Lifeline_SmokeColour | %1 !!!!'", Lifeline_SmokeColour];
 		diag_log format ["!!!! Lifeline_radio | %1 !!!!'", Lifeline_radio];
@@ -131,7 +132,6 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 		diag_log format ["!!!! Lifeline_Blacklist_Car | %1 !!!!'", Lifeline_Blacklist_Car];
 		diag_log format ["!!!! Lifeline_LimitDist | %1 !!!!'", Lifeline_LimitDist];
 		diag_log format ["!!!! Lifeline_Include_OPFOR | %1 !!!!'", Lifeline_Include_OPFOR];
-		diag_log format ["!!!! Lifeline_InstantDeathOPFOR | %1 !!!!'", Lifeline_InstantDeathOPFOR];
 		diag_log format ["!!!! Lifeline_Idle_CrouchOPFOR | %1 !!!!'", Lifeline_Idle_CrouchOPFOR];
 		diag_log format ["!!!! Lifeline_Hotwire | %1 !!!!'", Lifeline_Hotwire];
 		diag_log format ["!!!! Lifeline_ExplSpec | %1 !!!!'", Lifeline_ExplSpec];

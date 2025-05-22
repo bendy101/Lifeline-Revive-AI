@@ -186,6 +186,15 @@ if (Lifeline_ACEcheck_ == false) then {
 }; */
 if (Lifeline_ACEcheck_ == false) then {["Lifeline_cntdwn_disply", "SLIDER",   ["Bleedout Timer Display - When to Show",   "When to show countdown display, in seconds left.\ne.g. you could have bleedout set to 300 seconds but the\ncountdown display may only appear at 120 seconds.\nThen it acts more like a warning of time remaining.\n0 = off\n\n"], ["Lifeline Revive AI","HUD & MAP"], [0, 600, 300, 0],true,{Lifeline_cntdwn_disply = round Lifeline_cntdwn_disply}] call CBA_fnc_addSetting};
 
+["Lifeline_added_units", "LIST",     ["Hint e.g. 'Lifeline Revive 45 of 80 units'", 
+"	Added Units to scope: top, top right. normal Arma 3 hint. 
+
+	0 = off 
+	1 = only at start of mission
+	2 = every time a unit is added, anytime in mission
+
+\n\n"], ["Lifeline Revive AI","HUD & MAP"], [[0, 1, 2], ["Off","Only at Start of Mission", "Every Time New Units are Added"], 1],true] call CBA_fnc_addSetting;
+
 //MAIN
     //SMOKE
 ["Lifeline_SmokePerc", "SLIDER",   ["Smoke Chance",   "Percentage Chance of using Smoke when Healing\n\n"], ["Lifeline Revive AI","SMOKE"], [0, 1, .3, 0, true],true,{Lifeline_SmokePerc = round (Lifeline_SmokePerc * 100)}] call CBA_fnc_addSetting;
@@ -223,7 +232,7 @@ New method: no weapon pulled out between bandages - but due to arma bugs - there
 '1 per Group + any not under fire' means 1 medic always per group, plus any other units not under fire.
  'fire' is supression > 0.1
 
-"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["No limits. Any in Scope", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 1],true] call CBA_fnc_addSetting;
+"], ["Lifeline Revive AI","MEDIC SELECTION"], [[0,1,2,3,4,5,6], ["Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
 ["Lifeline_Dedicated_Medic", "CHECKBOX", ["Always Use Vanilla Arma 3 Medic", "Always force the vanilla Arma 3 medic to be used.    
 	If you want only the vanilla Arma 3 medic in action, then set this to 'true' and choose '1' from 'Number of Medics' above.
 

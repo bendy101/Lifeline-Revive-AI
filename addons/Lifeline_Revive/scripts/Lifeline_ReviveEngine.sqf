@@ -205,10 +205,10 @@ if (isServer) then {
 	publicVariable "Lifeline_OPFOR_Sides"; 
 
 	Lifeline_DH_update = {
-		    // IMPORTANT: Fix the initialization counter logic
-    // This ensures the count values are synchronized properly
-    Lifelineunitscount_pre = count Lifeline_All_Units;
-    Lifelinecompletedinit = Lifelineunitscount_pre;
+		// IMPORTANT: Fix the initialization counter logic
+		// This ensures the count values are synchronized properly
+		Lifelineunitscount_pre = count Lifeline_All_Units;
+		Lifelinecompletedinit = Lifelineunitscount_pre;
 
 		// if (Lifelinecompletedinit > 1) then {	
 		// 	Lifelineunitscount_pre = (count Lifeline_All_Units);
@@ -270,7 +270,10 @@ if (isServer) then {
 		// Add needed settings to each unit.
 		{
 			if !(_x getVariable ["LifelineDHadded",false]) then {
-					[format ["Lifeline Revive Units %1 of %2", Lifelinecompletedinit, Lifelineunitscount]] remoteExec ["hintsilent", allPlayers];
+					if (Lifeline_added_units_hint_trig) then {
+						[format ["Lifeline Revive Units %1 of %2", Lifelinecompletedinit, Lifelineunitscount]] remoteExec ["hintsilent", allPlayers];
+					};
+
 					Lifelinecompletedinit = Lifelinecompletedinit + 1;
 
 					// add voice identifiers (the orignal voiceover artists name)	
@@ -940,6 +943,9 @@ if (isServer) then {
 	Lifeline_mascal_autorevive_timer = 0; // when all units are down (MASCAL) but a unit has the auto-revive flag, then a timer will start before player is informed a unit is recovering.
 
 	["Lifeline Revive initialized"] remoteExec ["hintsilent", allplayers];
+	if (Lifeline_added_units == 1) then {
+		Lifeline_added_units_hint_trig = false;
+	};
 	// [] execvm "Lifeline_Revive\scripts\temp.sqf"; 
 
 	while {true} do {
