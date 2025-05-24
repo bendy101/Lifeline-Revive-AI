@@ -444,6 +444,12 @@ Lifeline_reset2 = {
 			_x setVariable ["Lifeline_AssignedMedic", [], true];
 			_x setvariable ["LifelinePairTimeOut",0,true];
 			// _x setVariable ["Lifeline_ExitTravel", false, true];
+			
+			// these two variables below are just for SOG AI to avoid clashes. 
+
+		    _x setVariable ["isInjured",false,true]; 
+			_x setVariable ["isMedic",false,true]; 
+            // -------------------- 
 
 			if (_x in Lifeline_Process) then {
 				Lifeline_Process = Lifeline_Process - [_x];

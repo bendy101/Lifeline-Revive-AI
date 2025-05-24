@@ -21,6 +21,18 @@ if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {
 	diag_log "++++++++++++++++++++ NO ACE MEDICAL ++++++++++++++++++++'";
 };
 
+Lifeline_SOGAIcheck_ = false;
+
+//check for SOG AI 
+if (isClass (configFile >> "cfgPatches" >> "JBOY_SOGAI_mod")) then {
+	diag_log "XEH_preInit.sqf +++++++++++ SOG AI DETECTED +++++++++++++++'";
+	Lifeline_SOGAIcheck_ = true;
+	[] spawn {
+		waitUntil {(!isNil "jboy_medicStart")};
+		jboy_medicStart = compile preprocessFileLineNumbers ("");
+	};
+};
+
 #include "\a3\ui_f\hpp\defineDIKCodes.inc"
 
 ["Lifeline Revive AI", "LifelineREV4", ["Activate", "Lifeline Revive AI"], {
@@ -300,6 +312,10 @@ by closing minimap which will also disable Blufor tracking.\n\n"], ["Lifeline Re
 ["Lifeline_HUD_dist_font", "LIST",     ["Font for distance hint",  "Font for distance hint"], ["Lifeline Revive AI","~~DEBUG"], [["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"], ["EtelkaMonospacePro","PuristaBold","PuristaLight","PuristaMedium","PuristaSemibold","RobotoCondensed","RobotoCondensedBold","RobotoCondensedLight"], 0],true] call CBA_fnc_addSetting;
 
 ["Lifeline_yellowmarker", "CHECKBOX", ["3D Arrow Markers", "in debug mode, show 3D markers when medic 20 metres away from incap."], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
+
+if (Lifeline_SOGAIcheck_ == true) then {
+	["Lifeline_SOGAI_orangetrian", "CHECKBOX", ["SOG AI: show orange triangle for incapped", "Although SOG AI revive is disabled, the orange triangle will still show for incapped units.\nuncheck this to remove the orange triangle.\n\n"], ["Lifeline Revive AI","~MISC"], true,true, {missionNameSpace setVariable ["JBOY_showInjuredIcon", Lifeline_SOGAI_orangetrian];}] call CBA_fnc_addSetting;
+};
 
 ["Lifeline_remove_3rd_pty_revive", "CHECKBOX", ["Remove Other Revive Systems Before Mission", "Uncheck this if you want the choice of cancelling Lifeline Revive in the mission.\nNot the best method however, its better to disable mod and restart mission (not restart Arma 3).\nDo this by unchecking 'ENABLE Lifeline Revive' and restarting mission.\n\n"], ["Lifeline Revive AI","~MISC"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_hintsilent", "CHECKBOX", ["Debug Hints", "Debug Hints. Using BI 'hinstsilent'"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;

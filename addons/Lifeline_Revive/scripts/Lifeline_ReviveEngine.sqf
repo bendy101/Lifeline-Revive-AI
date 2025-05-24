@@ -788,7 +788,6 @@ if (isServer) then {
 												_x setDamage 1; 
 												if (Lifeline_Revive_debug && Lifeline_hintsilent) then {[format ["%1 bled out. Dead.", name _x]] remoteExec ["hintSilent",2]};
 												if (Lifeline_Revive_debug && Lifeline_hintsilent) then {["diedbleedout1"] remoteExec ["playSound",2]};
-												diag_log format ["[0496] !!!!!!!!!!!! %1 BLED OUT !!!!!!!!!!!!!!'", name _x];
 											} else {
 											// AUTORECOVERS	
 												// _x setUnconscious false;
@@ -844,6 +843,10 @@ if (isServer) then {
 											};
 											_x setVariable ["ReviveInProgress",0,true]; 
 											_x setVariable ["Lifeline_AssignedMedic", [], true]; // added
+											//these two variables below are just for SOG AI to avoid clashes. 										
+											_x setVariable ["isInjured",false,true]; 											
+											// _x setVariable ["isMedic",false,true]; // keep off
+											// -------- 
 										};
 									// }; //if (Lifeline_RevMethod != 3) then {
 
@@ -975,7 +978,7 @@ if (isServer) then {
 
 		Lifeline_incaps2choose = Lifeline_incapacitated select {!(_x in Lifeline_Process) && (lifestate _x == "INCAPACITATED") && (rating _x > -2000)};
 
-		_diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; diag_log format ["================ [1285] PRIMARY LOOP  %1 Lifeline_incaps2choose: %2'", "temp", _diag_array];
+		_diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; 
 
 		if (count Lifeline_incaps2choose > 0 ) then {
 
@@ -1362,6 +1365,7 @@ if (isServer) then {
 				}; */
 
 				_incap setVariable ["ReviveInProgress",0,true];
+				_incap setVariable ["isInjured",false,true]; //just for SOG AI to avoid clashes. 
 
 				// SWITCH LOGIC IN REJECT MEDIC 
 
@@ -1450,6 +1454,10 @@ if (isServer) then {
 					publicVariable "Lifeline_Process";
 					_incap setVariable ["ReviveInProgress",3,true]; 
 					_medic setVariable ["ReviveInProgress",1,true]; 
+					//these two variables below are just for SOG AI to avoid clashes. 
+					_incap setVariable ["isInjured",true,true]; 
+					_medic setVariable ["isMedic",true,true]; 
+                    // -------- 
 					if (lifestate _medic != "INCAPACITATED" && !(_medic getVariable ["Lifeline_Captive_Delay",false])) then {
 						_medic setVariable ["Lifeline_Captive",(captive _medic),true]; //2025
 					};
@@ -1478,10 +1486,6 @@ if (isServer) then {
 	/* 	if (count _check_both_sides == 2) then {
 			_sleep = 3;		
 		}; */
-
-		if (_sleep == 3) then {
-			// playsound "siren1";
-		};
 
 		sleep _sleep;
 		// sleep 0.2;

@@ -41,17 +41,31 @@ Lifeline_mod = false;
 	Lifeline_hintsilent = true;
 	Lifeline_debug_soundalert = true;
 
+	Lifeline_SOGAI_orangetrian = false; // SOG AI 
+
 	Lifeline_ACE_vanillaFAK = true;
 
 	Lifeline_MASCAL_sides = []; 
 
 	if (Lifeline_ACEcheck_ == true) then {
 
-	if (Lifeline_ACE_vanillaFAK) then {
-		[401, ["ACE_morphine","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_packingBandage","ACE_epinephrine","ACE_adenosine","ACE_splint","ACE_plasmaIV_500","ACE_CableTie"]] call ace_common_fnc_registerItemReplacement;
+		if (Lifeline_ACE_vanillaFAK) then {
+			[401, ["ACE_morphine","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_packingBandage","ACE_epinephrine","ACE_adenosine","ACE_splint","ACE_plasmaIV_500","ACE_CableTie"]] call ace_common_fnc_registerItemReplacement;
+		};
+
 	};
 
-};
+	Lifeline_SOGAIcheck_ = false;
+
+	//check for SOG AI 
+	if (isClass (configFile >> "cfgPatches" >> "JBOY_SOGAI_mod")) then {
+		diag_log "XEH_preInit.sqf +++++++++++ SOG AI DETECTED +++++++++++++++'";
+		Lifeline_SOGAIcheck_ = true;
+		[] spawn {
+			waitUntil {(!isNil "jboy_medicStart")};
+			jboy_medicStart = compile preprocessFileLineNumbers ("");
+		};
+	};
 
 	// Lifeline_Idle_Crouch_Speed = 0; // the speed of a unit to consider "idle". Between 0 - 5.
 

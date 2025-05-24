@@ -153,9 +153,6 @@ Lifeline_Incapped = {
 			_opfor_not_pvp = true;
 		};
 
-		diag_log format ["%1 | Lifeline_Include_OPFOR %2 Lifeline_PVPstatus %3 Right Side? %5 Lifeline_OPFOR_Sides %6 !!!!!!!!!!!!!!!!!!!!!!!!!!! DMTG TRIG %4 !!!!!!!!!!!!!!!", 
-		name _unit, Lifeline_Include_OPFOR, Lifeline_PVPstatus, _dmg_trig, (side group _unit) in Lifeline_OPFOR_Sides, Lifeline_OPFOR_Sides];
-
 		if (Lifeline_RevProtect != 3) then {
 			_unit allowDamage dmg_trig;			[_unit, _dmg_trig] remoteExec ["allowDamage", 0];
 			// _unit setCaptive true;//TEMPCAPTIVEOFF
@@ -1222,6 +1219,10 @@ Lifeline_reset_variables = {
 				[[_x,_actionId],{params ["_unit","_actionId"];_unit setUserActionText [_actionId, ""];}] remoteExec ["call", 0, true];
 		};
 	};
+	//these two variables below are just for SOG AI to avoid clashes.
+	_unit setVariable ["isInjured",false,true]; 
+	_unit setVariable ["isMedic",false,true]; 
+    // -------- 
 };
 
 Lifeline_timer = {
