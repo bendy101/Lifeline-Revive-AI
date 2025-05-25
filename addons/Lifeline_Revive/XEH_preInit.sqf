@@ -57,7 +57,7 @@ LifelinePVEOPFORText2 = "OPFOR in PVE";
 1. Invincible during revive for both medic and incap. Even bullets won't affect them.
 2. Semi-Realism mode. The medic and incap is turned pseudo 'captive' to avoid being targeted.
    Enemy won't target them - however stray bullets and extra damage can still kill.
-3. Protection Off. Most Realism. Both medic and incap, can be both targeted and killed while reviving.\n\n"], ["Lifeline Revive AI","_MAIN"], [[1,2,3], ["Invincible","Captive Hack", "Off - Realism"], 1],true] call CBA_fnc_addSetting;
+3. Protection Off. Most Realism. Both medic and incap, can be both targeted and killed while reviving.\n\n"], ["Lifeline Revive AI","_MAIN"], [[1,2,3], ["Invincible","Captive Hack", "Off - Realism"], 1],true,{[] call Lifeline_RevProtect_Set}] call CBA_fnc_addSetting;
 
 //OPFOR
 	//SEPERATE CBA
@@ -292,6 +292,8 @@ if (Lifeline_ACEcheck_ == true) then {
 	Lifeline_RevMethod = 3;
 };
 
+["Lifeline_EnemyCloseByType", "LIST",     ["Medic Hit the Dirt",     "1 = When enemy is nearby < 500m\n2 = When enemy is is view < 500m\n3 = Random of above options\n\n"], ["Lifeline Revive AI","_MAIN"], [[1, 2, 3], ["When enemy is nearby < 500m","When enemy is is view < 500m", "Random (either options)"], 0]] call CBA_fnc_addSetting;
+
     //~BONUS. Unrelated to revive but useful
 if (Lifeline_ACEcheck_ == false) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
 ["Lifeline_Hotwire", "CHECKBOX", ["Hotwire Locked Vehicles with Toolkit", "Vehicles you cannot access can now be unlocked.\nHotwire them with toolkit.\nIf the vehicle is enclosed, then you need to break in first.\nDoes not apply to armoured units.\n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
@@ -341,6 +343,15 @@ if (Lifeline_ACEcheck_ == true) then {
 };
 
 if (Lifeline_remove_3rd_pty_revive == true && Lifeline_revive_enable) then {
+
+	_PsychoRevive = "PsychoRevive" call BIS_fnc_getParamValue;
+	if !(isNil "_PsychoRevive") then {
+		if (_PsychoRevive == 1) then {
+			{
+				_x setVariable ["tcb_ais_aisInit",true];
+			} foreach (allunits select {(simulationEnabled _x)});
+		};
+	};
 
 	// SOG:PF CDLC revive system
 	// Pretend revive system was already initialized.

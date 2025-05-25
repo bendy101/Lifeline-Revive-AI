@@ -10,9 +10,13 @@ if (Lifeline_Voices == 1) then { Lifeline_UnitVoices = ["Adam", "Antoni", "Arnol
 if (Lifeline_Voices == 2) then { Lifeline_UnitVoices = ["A006", "Alistair", "Allen", "Bruce", "Charlie", "Daniel", "Dave", "Hugh", "Philemon"]; };
 if (Lifeline_Voices == 3) then { Lifeline_UnitVoices = ["Adam", "Antoni", "Arnold", "Bill", "Callum", "Clyde"]; };
 
-if (Lifeline_RevProtect == 1) then {dmg_trig=false; cptv_trig=true};
-if (Lifeline_RevProtect == 2) then {dmg_trig=true; cptv_trig=true};
-if (Lifeline_RevProtect == 3) then {dmg_trig=true};//changed for antistasi
+Lifeline_RevProtect_Set = {	
+	if (Lifeline_RevProtect == 1) then {dmg_trig=false; cptv_trig=true};
+	if (Lifeline_RevProtect == 2) then {dmg_trig=true; cptv_trig=true};
+	if (Lifeline_RevProtect == 3) then {dmg_trig=true};//changed for antistasi
+};
+
+[] call Lifeline_RevProtect_Set;
 
 if (Lifeline_Revive_debug) then {
 	[] call serverSide_MissionSettings;//just diaglogs
@@ -337,11 +341,11 @@ if (isServer) then {
 					_x setVariable ["Lifeline_Grp", _goup, true];
 					_x setVariable ["LifelinePairTimeOut",0,true];				};
 
-				// Add vehicle to Lifeline_All_Units
-				if !(assignedvehicle _x isEqualTo (_x getVariable ["AssignedVeh", objNull])) then {
+				// Add vehicle to Lifeline_All_Units -- this should be OFF. Only need to know when medic is selected.
+				/* if !(assignedvehicle _x isEqualTo (_x getVariable ["AssignedVeh", objNull])) then {
 					_vehicle = assignedvehicle _x;
 					_x setVariable ["AssignedVeh", _vehicle, true];
-				};
+				}; */
 
 				// add death event handler 
 				_x addMPEventHandler ["MPKilled", {
@@ -1405,6 +1409,7 @@ if (isServer) then {
 					if (_medic distance2D _incap < 200) then {
 						_medic setVariable ["AssignedVeh", _vehicle, true];
 						unassignVehicle _medic;
+						// [_medic] remoteExec ["unassignVehicle", 0];
 						moveOut _medic;
 						[_medic] allowGetIn false;
 					} else {

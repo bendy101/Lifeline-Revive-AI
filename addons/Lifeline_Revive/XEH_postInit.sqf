@@ -5,6 +5,17 @@ diag_log "============================================= XEH_postInit.sqf =======
 diag_log "============================================================================================================='";
 diag_log "============================================================================================================='";
 
+if (Lifeline_remove_3rd_pty_revive == true && Lifeline_revive_enable) then {
+	_PsychoRevive = "PsychoRevive" call BIS_fnc_getParamValue;
+	if !(isNil "_PsychoRevive") then {
+		if (_PsychoRevive == 1) then {
+			{
+				_x setVariable ["tcb_ais_aisInit",true];
+			} foreach (allunits select {(simulationEnabled _x)});
+		};
+	};
+};
+
 if !(Lifeline_revive_enable) exitWith {diag_log "1. nnnnnnnnnnnnnnnnnnnnnn MOD DISABLED. EXIT. nnnnnnnnnnnnnnnnnnnnnnn'";};
 
 if (Lifeline_ACEcheck_ == true) then {
@@ -52,11 +63,18 @@ if (isClass (configFile >> "cfgPatches" >> "JBOY_SOGAI_mod")) then {
 	[] spawn {
 		waitUntil {(!isNil "jboy_medicStart")};
 		jboy_medicStart = compile preprocessFileLineNumbers ("");
+	};	
+	if (Lifeline_Idle_Crouch) then {	
+		[] spawn {
+			waitUntil {(!isNil "jboy_followersCopyLeaderStance")};
+			jboy_followersCopyLeaderStance = compile preprocessFileLineNumbers ("");
+		};	
+	};
+	[] spawn {
 		if (Lifeline_SOGAI_orangetrian == false) then {
 			waitUntil {isNil {missionNameSpace getVariable "JBOY_showInjuredIcon"}};
 			missionNameSpace setVariable ["JBOY_showInjuredIcon", false];
 		};
-
 	};
 };
 

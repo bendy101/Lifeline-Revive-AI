@@ -34,13 +34,13 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 		diag_log format ["%2 | %1 !!!!!!!!SERV | Group: %8 | UnitSide: %3 | GroupSide: %7 | Lifeline_Down: %4 | Lifeline_allowdeath: %5 | ReviveInProgress: %6'",_line, name _unit, side _unit, (_unit getVariable ["Lifeline_Down","NOT SET"]), (_unit getVariable ["Lifeline_allowdeath","NOT SET"]), (_unit getVariable ["ReviveInProgress","NOT SET"]), side (group _unit), group _unit];
 		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_All_Units: %3 | Lifeline_Process: %6 | Lifeline_incapacitated: %4 | Lifeline_medics: %5'",_line, name _unit, (_unit in Lifeline_All_Units), (_unit in Lifeline_incapacitated), (_unit in Lifeline_medics), (_unit in Lifeline_Process)];
 		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_countdown_start: %3 | Lifeline_canceltimer: %4 | unitPos stance: %5 | Lifeline_crouchtrig %6'",_line, name _unit, (_unit getVariable ["Lifeline_countdown_start","NOT SET"]), (_unit getVariable ["Lifeline_canceltimer","NOT SET"]), UnitPos _unit, _unit getVariable ["Lifeline_crouchtrig",false]];
-		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_AssignedMedic:%4 | AnimationState:%3 | Lifeline_selfheal_progss:%5'",_line, name _unit, animationstate _unit, name (_unit getVariable ["Lifeline_AssignedMedic",[]] select 0), _unit getVariable ["Lifeline_selfheal_progss",false]];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_AssignedMedic:%4 | AnimationState:%3 | Lifeline_selfheal_progss:%5 | Lifeline_back2vehicle:%6'",_line, name _unit, animationstate _unit, name (_unit getVariable ["Lifeline_AssignedMedic",[]] select 0), _unit getVariable ["Lifeline_selfheal_progss",false], _unit getVariable ["Lifeline_back2vehicle",false]];
 
 		_bleedout = (_unit getVariable ["LifelineBleedOutTime",0]);
 		_pairtime = (_unit getVariable ["LifelinePairTimeOut",0]);
 		if (_bleedout != 0) then {_bleedout = _bleedout - time};
 		if (_pairtime != 0) then {_pairtime = _pairtime - time};	
-		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_reset_trig: %6 | AutoRevive: %3 | Bleedout %4 | Pair Time %5 | Lifeline_ExitTravel %7 | assignedVehicle %8 '",_line, name _unit, _unit getVariable ["Lifeline_autoRecover","NOT SET"],_bleedout,_pairtime,_unit getVariable ["Lifeline_reset_trig",false], _unit getVariable ["Lifeline_ExitTravel",false], assignedVehicle _unit];
+		diag_log format ["%2 | %1 !!!!!!!!SERV | Lifeline_reset_trig: %6 | AutoRevive: %3 | Bleedout %4 | Pair Time %5 | Lifeline_ExitTravel %7 | assignedVehicle %8 | AssignedVeh %9'",_line, name _unit, _unit getVariable ["Lifeline_autoRecover","NOT SET"],_bleedout,_pairtime,_unit getVariable ["Lifeline_reset_trig",false], _unit getVariable ["Lifeline_ExitTravel",false], assignedVehicle _unit,  _unit getVariable ["AssignedVeh", "NOT SET"]];
 		if (Lifeline_RevMethod == 2) then {
 			diag_log format ["%2 | %1 !!!!!!!!SERV | unitwounds: %3'",_line, name _unit, _unit getVariable ["unitwounds","NOT SET"]];
 			diag_log format ["%2 | %1 !!!!!!!!SERV | _actionId: %3 | num_bandages: %4'",_line, name _unit, _unit getVariable ["Lifeline_ActionMenuWounds","NOT SET"],_unit getVariable ["num_bandages","NOT SET"]];
