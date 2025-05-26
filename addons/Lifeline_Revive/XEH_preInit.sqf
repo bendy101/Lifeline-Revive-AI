@@ -52,7 +52,7 @@ LifelinePVEOPFORText2 = "OPFOR in PVE";
 //MAIN
    //_MAIN
 ["Lifeline_revive_enable", "CHECKBOX", ["ENABLE "+Lifeline_Version, "On or Off.\n\n"], "Lifeline Revive AI", true,true] call CBA_fnc_addSetting;
-["Lifeline_Scope", "LIST",     ["Scope", "Scope of mod. Which units will Lifeline Revive affect?\n\n\n"], ["Lifeline Revive AI","_MAIN"], [[1, 2, 3, 4], ["Group","Playable Slots", "Side", "Choose in Mission"], 3],true] call CBA_fnc_addSetting;
+["Lifeline_Scope", "LIST",     ["Scope", "Scope of mod. Which units will Lifeline Revive affect?\n\n*'Playable Slots' is the lobby slots plus player groups\n\n"], ["Lifeline Revive AI","_MAIN"], [[1, 2, 3, 4], ["Group","Playable Slots", "Side", "Choose in Mission"], 3],true] call CBA_fnc_addSetting;
 ["Lifeline_RevProtect", "LIST",     ["Shield while reviving",     "Protection during revive process. 3 levels.
 1. Invincible during revive for both medic and incap. Even bullets won't affect them.
 2. Semi-Realism mode. The medic and incap is turned pseudo 'captive' to avoid being targeted.
