@@ -13,6 +13,16 @@ diag_log "======================================================================
 // 	sleep 1;
 // };
 
+[] execvm "Lifeline_Revive\scripts\StartActionMenu.sqf";
+
+Lifeline_mod_dedi = false;
+
+if (Lifeline_mod && !hasInterface) then {
+	Lifeline_mod_dedi = true;
+	publicVariable "Lifeline_mod_dedi";
+	[2, "++++++++++++++++++++++++ DEDICATED MOD SERVER +++++++++++++++++++++++++"] remoteExec ["diag_log", 0];
+};
+
 // just for the Arma 3 hint "Lifeline Revive X of y units" message.
 if (Lifeline_added_units == 0) then {
 	Lifeline_added_units_hint_trig = false;
@@ -363,10 +373,14 @@ if (isServer) then {
 Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
 publicVariable "Lifeline_OPFOR_Sides"; // THIS IS AN ARRAY OF ENEMY SIDES
 
-if (Lifeline_Scope == 4) then {
-		[] execvm "Lifeline_Revive\scripts\StartActionMenu.sqf";
+if (Lifeline_Scope == 4 || Lifeline_mod_dedi ) then {
+	if !(Lifeline_mod_dedi) then {
+		[false] spawn Lifeline_StartActionMenu;
+	} else {
+		_player = _players select 0;
+		[true] remoteExec ["Lifeline_StartActionMenu", _player, true];
+	};
 } else {
-
 	//============================ LOAD MAIN FILES =============================
 	// if (isNil "oldACE") then {
 		// [] execvm "Lifeline_Revive\scripts\non_ace\Lifeline_DamageHandlerFNC.sqf";

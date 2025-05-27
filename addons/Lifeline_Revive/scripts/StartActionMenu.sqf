@@ -1,6 +1,7 @@
-if (isServer) then {
+// if (isServer) then {
 
 	Lifeline_StartActionMenu = {
+		params ["_dedi"];
 
 		_firstrun = false;
 		Lifeline_MenuLoop = true;
@@ -37,6 +38,12 @@ if (isServer) then {
 		_scope3texttotal = "";
 
 		_LLRtext = "Start LLR";
+		if (_dedi) then {
+			_LLRtext = "Start LLR | DEDI ";
+			Lifeline_StartReviveBETA = true;
+			publicVariable "Lifeline_StartReviveBETA";
+			[] call Lifeline_TransmitPublicVariables;
+		};
 		_colour = "#bfc9ca";
 		_colourblue = "#009aff";
 		_colourred = "#FF5733";
@@ -206,23 +213,31 @@ if (isServer) then {
 				};
 				if (Lifeline_Include_OPFOR && !Lifeline_PVPstatus) then {
 					actionLifelineID5 = player addAction ["<t size='" + _fontsize + "' font = '" + _font + "' color='"+_colour+"'>Exclude<t color='#FF5733'> OPFOR</t></t>", {
+						 params ["_target", "_caller", "_actionId", "_arguments"];
+						 _dedi = _arguments select 0;
 						if (Lifeline_Include_OPFOR) then {Lifeline_Include_OPFOR = false} else {Lifeline_Include_OPFOR = true};
 						// [] call Lifeline_StartActionMenuForce;
 						terminate Lifeline_MenuScript;
 						Lifeline_cancel = true;
 						// [] call LifelineremoveactionmenuIDs;
-						[] spawn Lifeline_StartActionMenu;
-					}];
+						[_dedi] spawn Lifeline_StartActionMenu;
+					},
+					[_dedi]
+					];
 				};				
 				if (!Lifeline_Include_OPFOR && !Lifeline_PVPstatus) then {
 					actionLifelineID5 = player addAction ["<t size='" + _fontsize + "' font = '" + _font + "' color='"+_colour+"'>Include<t color='#FF5733'> OPFOR</t></t>", {
+						 params ["_target", "_caller", "_actionId", "_arguments"];
+						 _dedi = _arguments select 0;
 						if (Lifeline_Include_OPFOR) then {Lifeline_Include_OPFOR = false} else {Lifeline_Include_OPFOR = true};
 						// [] call Lifeline_StartActionMenuForce;
 						terminate Lifeline_MenuScript;
 						Lifeline_cancel = true;
 						// [] call LifelineremoveactionmenuIDs;
-						[] spawn Lifeline_StartActionMenu;
-					}];
+						[_dedi] spawn Lifeline_StartActionMenu;
+					},
+					[_dedi]
+					];
 				};
 
 				actionLifelineID4 = player addAction ["<t size='" + _fontsize + "' font = '" + _font + "' color='#FF5733'>CANCEL LLR</t>", {Lifeline_cancel = true;[] call LifelineremoveactionmenuIDs;}];
@@ -287,6 +302,208 @@ if (isServer) then {
 
 	};
 
-	[] spawn Lifeline_StartActionMenu;
+	Lifeline_TransmitPublicVariables = {
 
-}; //if (isServer) then {
+			// Transmit CBA settings to server if this is a dedicated server environment
+		if (_dedi && hasInterface) then {
+			// Transmit all CBA settings to server via publicVariable
+			// Main settings
+			if (!isNil "Lifeline_revive_enable") then {
+				publicVariable "Lifeline_revive_enable";
+			};
+			if (!isNil "Lifeline_Scope") then {
+				publicVariable "Lifeline_Scope";
+			};
+			if (!isNil "Lifeline_RevProtect") then {
+				publicVariable "Lifeline_RevProtect";
+			};
+			if (!isNil "Lifeline_Include_OPFOR") then {
+				publicVariable "Lifeline_Include_OPFOR";
+			};
+			// Non-ACE settings (only if ACE is not loaded)
+			if (isNil "ace_medical_enabled") then {
+				if (!isNil "Lifeline_BandageLimit") then {
+					publicVariable "Lifeline_BandageLimit";
+				};
+				if (!isNil "Lifeline_InstantDeath") then {
+					publicVariable "Lifeline_InstantDeath";
+				};
+				if (!isNil "Lifeline_BleedOutTime") then {
+					publicVariable "Lifeline_BleedOutTime";
+				};
+				if (!isNil "Lifeline_autoRecover") then {
+					publicVariable "Lifeline_autoRecover";
+				};
+				if (!isNil "Lifeline_CPR_likelihood") then {
+					publicVariable "Lifeline_CPR_likelihood";
+				};
+				if (!isNil "Lifeline_CPR_less_bleedouttime") then {
+					publicVariable "Lifeline_CPR_less_bleedouttime";
+				};
+				if (!isNil "Lifeline_IncapThres") then {
+					publicVariable "Lifeline_IncapThres";
+				};
+				if (!isNil "Lifeline_cntdwn_disply") then {
+					publicVariable "Lifeline_cntdwn_disply";
+				};
+				if (!isNil "Lifeline_Fatigue") then {
+					publicVariable "Lifeline_Fatigue";
+				};
+			};
+			// ACE-specific settings (only if ACE is loaded)
+			if (!isNil "ace_medical_enabled") then {
+				if (!isNil "Lifeline_ACE_Bandage_Method") then {
+					publicVariable "Lifeline_ACE_Bandage_Method";
+				};
+				if (!isNil "Lifeline_ACE_Blackout") then {
+					publicVariable "Lifeline_ACE_Blackout";
+				};
+				if (!isNil "Lifeline_ACE_OPFORlimitbleedtime") then {
+					publicVariable "Lifeline_ACE_OPFORlimitbleedtime";
+				};
+				if (!isNil "Lifeline_ACE_CIVILIANlimitbleedtime") then {
+					publicVariable "Lifeline_ACE_CIVILIANlimitbleedtime";
+				};
+				if (!isNil "Lifeline_ACE_vanillaFAK") then {
+					publicVariable "Lifeline_ACE_vanillaFAK";
+				};
+				if (!isNil "Lifeline_ACE_BluFor") then {
+					publicVariable "Lifeline_ACE_BluFor";
+				};
+			};
+			// AI and Medic settings
+			if (!isNil "Lifeline_SelfHeal_Cond") then {
+				publicVariable "Lifeline_SelfHeal_Cond";
+			};
+			if (!isNil "Lifeline_Medic_Limit") then {
+				publicVariable "Lifeline_Medic_Limit";
+			};
+			if (!isNil "Lifeline_Dedicated_Medic") then {
+				publicVariable "Lifeline_Dedicated_Medic";
+			};
+			if (!isNil "Lifeline_LimitDist") then {
+				publicVariable "Lifeline_LimitDist";
+			};
+			if (!isNil "Lifeline_Blacklist_Mounted_Weapons") then {
+				publicVariable "Lifeline_Blacklist_Mounted_Weapons";
+			};
+			if (!isNil "Lifeline_Blacklist_Drivers") then {
+				publicVariable "Lifeline_Blacklist_Drivers";
+			};
+			if (!isNil "Lifeline_Blacklist_Armour") then {
+				publicVariable "Lifeline_Blacklist_Armour";
+			};
+			if (!isNil "Lifeline_Blacklist_Air") then {
+				publicVariable "Lifeline_Blacklist_Air";
+			};
+			if (!isNil "Lifeline_Blacklist_Car") then {
+				publicVariable "Lifeline_Blacklist_Car";
+			};
+			// HUD and Map settings
+			if (!isNil "Lifeline_HUD_distance") then {
+				publicVariable "Lifeline_HUD_distance";
+			};
+			if (!isNil "Lifeline_HUD_medical") then {
+				publicVariable "Lifeline_HUD_medical";
+			};
+			if (!isNil "Lifeline_HUD_names") then {
+				publicVariable "Lifeline_HUD_names";
+			};
+			if (!isNil "Lifeline_HUD_nameformat") then {
+				publicVariable "Lifeline_HUD_nameformat";
+			};
+			if (!isNil "Lifeline_HUD_namesize") then {
+				publicVariable "Lifeline_HUD_namesize";
+			};
+			if (!isNil "Lifeline_Map_mark") then {
+				publicVariable "Lifeline_Map_mark";
+			};
+			if (!isNil "Lifeline_added_units") then {
+				publicVariable "Lifeline_added_units";
+			};
+			// Smoke settings
+			if (!isNil "Lifeline_SmokePerc") then {
+				publicVariable "Lifeline_SmokePerc";
+			};
+			if (!isNil "Lifeline_EnemySmokePerc") then {
+				publicVariable "Lifeline_EnemySmokePerc";
+			};
+			if (!isNil "Lifeline_SmokeColour") then {
+				publicVariable "Lifeline_SmokeColour";
+			};
+			// Sound settings
+			if (!isNil "Lifeline_radio") then {
+				publicVariable "Lifeline_radio";
+			};
+			if (!isNil "Lifeline_MedicComments") then {
+				publicVariable "Lifeline_MedicComments";
+			};
+			if (!isNil "Lifeline_Voices") then {
+				publicVariable "Lifeline_Voices";
+			};
+			// Technical settings
+			if (!isNil "Lifeline_Idle_Medic_Stop") then {
+				publicVariable "Lifeline_Idle_Medic_Stop";
+			};
+			if (!isNil "Lifeline_AI_skill") then {
+				publicVariable "Lifeline_AI_skill";
+			};
+			if (!isNil "Lifeline_Anim_Method") then {
+				publicVariable "Lifeline_Anim_Method";
+			};
+			if (!isNil "Lifeline_EnemyCloseByType") then {
+				publicVariable "Lifeline_EnemyCloseByType";
+			};
+			// Bonus features
+			if (!isNil "Lifeline_Hotwire") then {
+				publicVariable "Lifeline_Hotwire";
+			};
+			if (!isNil "Lifeline_ExplSpec") then {
+				publicVariable "Lifeline_ExplSpec";
+			};
+			if (!isNil "Lifeline_Idle_Crouch") then {
+				publicVariable "Lifeline_Idle_Crouch";
+			};
+			if (!isNil "Lifeline_Idle_Crouch_Speed") then {
+				publicVariable "Lifeline_Idle_Crouch_Speed";
+			};
+			if (!isNil "Lifeline_Idle_CrouchOPFOR") then {
+				publicVariable "Lifeline_Idle_CrouchOPFOR";
+			};
+			// Debug settings
+			if (!isNil "Lifeline_Revive_debug") then {
+				publicVariable "Lifeline_Revive_debug";
+			};
+			if (!isNil "Lifeline_HUD_dist_font") then {
+				publicVariable "Lifeline_HUD_dist_font";
+			};
+			if (!isNil "Lifeline_yellowmarker") then {
+				publicVariable "Lifeline_yellowmarker";
+			};
+			if (!isNil "Lifeline_remove_3rd_pty_revive") then {
+				publicVariable "Lifeline_remove_3rd_pty_revive";
+			};
+			if (!isNil "Lifeline_hintsilent") then {
+				publicVariable "Lifeline_hintsilent";
+			};
+			if (!isNil "Lifeline_debug_soundalert") then {
+				publicVariable "Lifeline_debug_soundalert";
+			};
+			if (!isNil "Lifeline_HUD_names_pairtime") then {
+				publicVariable "Lifeline_HUD_names_pairtime";
+			};
+			if (!isNil "Lifeline_StartReviveBETA") then {
+				publicVariable "Lifeline_StartReviveBETA";
+			};
+			if (!isNil "Lifeline_ShowOpfor_HUDlist") then {
+				publicVariable "Lifeline_ShowOpfor_HUDlist";
+			};
+			// SOG AI compatibility
+			if (!isNil "Lifeline_SOGAI_orangetrian") then {
+				publicVariable "Lifeline_SOGAI_orangetrian";
+			};
+		};
+
+	};
+
+// }; //if (isServer) then {
