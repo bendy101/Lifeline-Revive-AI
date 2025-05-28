@@ -4,8 +4,6 @@
 
 [Here on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3343235386)
 
-## *NOW SIGNED! Can run mod on dedi server*
-
 Lifeline Revive AI enables AI units to heal and revive, offering the most versatile solution in the workshop. It is compatible with ACE Medical or vanilla Arma, designed for maximum workshop mission compatibility, and enhances immersion with voiced AI medics.
 
 ## Key Features
