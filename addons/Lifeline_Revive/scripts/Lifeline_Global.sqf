@@ -2220,6 +2220,7 @@ Lifeline_check_available_medic = {
 		&& (lifestate _unit != "INCAPACITATED")
 		&& _unit getVariable ["Lifeline_ExitTravel", false] == false
 		&& _unit getVariable ["Lifeline_back2vehicle", false] == false //check unit is not heading back to vehicle
+	    && (if (Lifeline_antistasiLoaded) then {if (_unit == Petros) then {false} else {true}} else {true}) //check not antistasi commander
 };
 
 Lifeline_count_group_medics = {
