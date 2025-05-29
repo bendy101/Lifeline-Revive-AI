@@ -83,6 +83,9 @@ if (((toLower missionName) find "dynamic recon ops") != -1
 // wait for players 
 waitUntil {count (allPlayers - entities "HeadlessClient_F") >0};
 
+
+Lifeline_ASmission = false;
+
 if (isServer && Lifeline_antistasiLoaded && (((toLower missionName) find "antistasi") != -1) == true) then {
     waitUntil {
         !isNil "theBoss" &&
@@ -93,6 +96,7 @@ if (isServer && Lifeline_antistasiLoaded && (((toLower missionName) find "antist
         !isNil "A3A_fnc_loadPlayer" &&
         !isNil "A3A_fnc_scheduler"
     };
+	Lifeline_ASmission = true;
     sleep 5;
 };
 
