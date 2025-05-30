@@ -314,7 +314,7 @@ if (isServer) then {
 							Lifeline_UnitVoicesCount = count Lifeline_UnitVoices;
 							};
 						Lifeline_UnitVoicesCount = Lifeline_UnitVoicesCount - 1;
-					};				
+					};	
 
 				//set skill for your AI Units	
 				if (Lifeline_AI_skill > 0) then {

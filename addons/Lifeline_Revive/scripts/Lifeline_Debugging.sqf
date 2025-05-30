@@ -90,6 +90,10 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 	};
 
 	serverSide_MissionSettings = { 
+		diag_log format ["!!!! Lifeline_Version | %1 !!!!'", Lifeline_Version];
+		diag_log format ["!!!! Lifeline_Version_no | %1 !!!!'", Lifeline_Version_no];
+		diag_log format ["!!!! Lifeline_PVPstatus | %1 !!!!'", Lifeline_PVPstatus];
+		diag_log format ["!!!! Lifeline_mod | %1 !!!!'", Lifeline_mod];
 		diag_log format ["!!!! Lifeline_Scope | %1 !!!!'", Lifeline_Scope];
 		diag_log format ["!!!! Lifeline_RevProtect | %1 !!!!'", Lifeline_RevProtect];
 		if (Lifeline_ACEcheck_ == false) then {
@@ -112,7 +116,11 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 		diag_log format ["!!!! Lifeline_HUD_medical | %1 !!!!'", Lifeline_HUD_medical];
 		diag_log format ["!!!! Lifeline_HUD_names | %1 !!!!'", Lifeline_HUD_names];
 		diag_log format ["!!!! Lifeline_Map_mark | %1 !!!!'", Lifeline_Map_mark];
+
+		diag_log format ["!!!! Lifeline_ACEcheck_ | %1 !!!!'", Lifeline_ACEcheck_];
+		diag_log format ["!!!! oldACE | %1 !!!!'", oldACE];
 		if (Lifeline_ACEcheck_ == true) then {
+			diag_log format ["!!!! aceversion | %1 !!!!'", aceversion];
 			diag_log format ["!!!! Lifeline_ACE_Bandage_Method | %1 !!!!'", Lifeline_ACE_Bandage_Method];
 			diag_log format ["!!!! Lifeline_ACE_Blackout | %1 !!!!'", Lifeline_ACE_Blackout];
 			diag_log format ["!!!! Lifeline_ACE_BluFor | %1 !!!!'", Lifeline_ACE_BluFor];
@@ -141,6 +149,9 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 		diag_log format ["!!!! Lifeline_HUD_names_pairtime | %1 !!!!'", Lifeline_HUD_names_pairtime];
 		diag_log format ["!!!! Lifeline_ShowOpfor_HUDlist | %1 !!!!'", Lifeline_ShowOpfor_HUDlist];
 		diag_log format ["!!!! Lifeline_RevMethod | %1 !!!!'", Lifeline_RevMethod];
+		diag_log format ["!!!! Lifeline_SOGAIcheck_ | %1 !!!!'", Lifeline_SOGAIcheck_];
+		diag_log format ["!!!! Lifeline_StartReviveBETA | %1 !!!!'", Lifeline_StartReviveBETA];
+		// diag_log format ["!!!! LifelinePVEOPFORText2 | %1 !!!!'", LifelinePVEOPFORText2];
 	};
 // };
 

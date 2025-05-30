@@ -13,12 +13,12 @@ diag_log format ["================================ VERSION: %1    %2'", Lifeline
 
 // check for ACE medical
 if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {
-	diag_log "++++++++++++++++++++ ACE MEDICAL +++++++++++++++++++'";
+	diag_log "XEH_preInit.sqf ++++++++++++++++++++ ACE MEDICAL +++++++++++++++++++'";
 	Lifeline_ACEcheck_ = true;
 } else {
 	oldACE = nil;
 	Lifeline_ACEcheck_ = false;
-	diag_log "++++++++++++++++++++ NO ACE MEDICAL ++++++++++++++++++++'";
+	diag_log "XEH_preInit.sqf ++++++++++++++++++++ NO ACE MEDICAL ++++++++++++++++++++'";
 };
 
 Lifeline_SOGAIcheck_ = false;
@@ -215,7 +215,7 @@ if (Lifeline_ACEcheck_ == false) then {["Lifeline_cntdwn_disply", "SLIDER",   ["
 
     //SOUND
 ["Lifeline_radio", "CHECKBOX", ["Allow radio status messages", "Allow radio status messages. If medic is over 50m away, radio to assure.\n\n"], ["Lifeline Revive AI","SOUND"], true,true] call CBA_fnc_addSetting;
-["Lifeline_MedicComments", "CHECKBOX", ["AI Medic Comments", "Allow AI medic to speak with assurances to incap during revive.\nIgnored for ACE as this is compulsory due to black screen when incap.\n\n"], ["Lifeline Revive AI","SOUND"], true,true] call CBA_fnc_addSetting;
+["Lifeline_MedicComments", "CHECKBOX", ["AI Medic Voice During Revive", "Allow AI medic to speak with assurances to incap during revive.\nIgnored for ACE as this is compulsory due to black screen when incap.\n\n"], ["Lifeline Revive AI","SOUND"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_Voices", "LIST",     ["Voice Accents",  "Commonwealth (British + Australian) or USA\n\n"], ["Lifeline Revive AI","SOUND"], [[1,2,3], ["All","British Empire", "USA"], 0],true] call CBA_fnc_addSetting;
 
     //TECH TWEAKS
@@ -323,7 +323,7 @@ if (Lifeline_SOGAIcheck_ == true) then {
 ["Lifeline_hintsilent", "CHECKBOX", ["Debug Hints", "Debug Hints. Using BI 'hinstsilent'"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
 ["Lifeline_debug_soundalert", "CHECKBOX", ["Error Sound Alerts", "Sound Alerts when there is a bug."], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
 ["Lifeline_HUD_names_pairtime", "CHECKBOX", ["pair timer for HUD list of units", "incl time for pairs in HUD list of incapped units and medics"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
-["Lifeline_StartReviveBETA", "CHECKBOX", ["BETA: test version of medic journey to incap", "Still not 100% convinced with my new code for the final 20 metres of medic getting to incap. \nStill testing.  \n\n"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
+["Lifeline_StartReviveBETA", "CHECKBOX", ["BETA: test version of medic journey to incap", "Still not 100% convinced with my new code for the final 20 metres of medic getting to incap. \nStill testing.  \n\n"], ["Lifeline Revive AI","~~DEBUG"], true,true] call CBA_fnc_addSetting;
 
 //OPFOR
 	// SEPARATE CBA

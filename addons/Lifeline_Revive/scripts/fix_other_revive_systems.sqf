@@ -83,7 +83,6 @@ if (((toLower missionName) find "dynamic recon ops") != -1
 // wait for players 
 waitUntil {count (allPlayers - entities "HeadlessClient_F") >0};
 
-
 Lifeline_ASmission = false;
 
 if (isServer && Lifeline_antistasiLoaded && (((toLower missionName) find "antistasi") != -1) == true) then {
@@ -127,17 +126,17 @@ if (isNil "oldACE") then {
 		Lifeline_ACEcheck_ = true;
 };
 
+// GENERIC REMOVAL OF HANDLERS>>> DIRTY METHOD. Only used to override prairie fire so far...
+Lifeline_remove_all_handlers_dirty = {
+	params ["_unit"];
+	_unit removeAllEventHandlers "Killed"; 
+	_unit removeAllEventHandlers "Respawn"; 
+	_unit removeAllEventHandlers "HandleHeal";
+	_unit removeAllEventHandlers "handleDamage";
+};
+
 // attempt to remove 3rd part revives AFTER mission load. This method not recomended, use CBA setting to do this before mission for more thourough method.
 if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
-
-	// GENERIC REMOVAL OF HANDLERS>>> DIRTY METHOD. Only used to override prairie fire so far...
-	Lifeline_remove_all_handlers_dirty = {
-		params ["_unit"];
-		_unit removeAllEventHandlers "Killed"; 
-		_unit removeAllEventHandlers "Respawn"; 
-		_unit removeAllEventHandlers "HandleHeal";
-		_unit removeAllEventHandlers "handleDamage";
-	};
 
 	_3rdpartyReviveDetected = "";
 	//Detect SOG PF REVIVE 
@@ -335,7 +334,7 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 // }; // end isNil "oldACE"
 
 // PVP check
-if (isServer) then {
+/* if (isServer) then {
     // Initialize PVP status on server
     Lifeline_PVPstatus = false;
     publicVariable "Lifeline_PVPstatus";
@@ -367,7 +366,34 @@ if (isServer) then {
         Lifeline_PVPstatus = false;
     };
     publicVariable "Lifeline_PVPstatus";
-};
+}; */
+
+//Detect PVP status if not defined (mission reload safety)
+Lifeline_PVPstatus = false;
+
+// if (isNil "Lifeline_PVPstatus") then {
+	// Simple, reliable PVP Detection
+	_players = allPlayers - entities "HeadlessClient_F";
+	if (count _players > 0) then {
+		// Collect all unique player sides
+		_currentSides = [];
+		{
+			_playerSide = side group _x;
+			_currentSides pushBackUnique _playerSide;
+		} forEach _players;
+		// Determine PVP status: multiple sides = PVP, single side = PVE
+		if (count _currentSides > 1) then {
+			Lifeline_PVPstatus = true;
+		} else {
+			Lifeline_PVPstatus = false;
+		};
+	} else {
+		// No players found, default to PVE
+		Lifeline_PVPstatus = false;
+	};
+	// Ensure this gets shared with other clients/server
+	publicVariable "Lifeline_PVPstatus";
+// };
 
 // _players = allPlayers - entities "HeadlessClient_F";
 
@@ -377,12 +403,13 @@ if (isServer) then {
 Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
 publicVariable "Lifeline_OPFOR_Sides"; // THIS IS AN ARRAY OF ENEMY SIDES
 
-if (Lifeline_Scope == 4 || Lifeline_mod_dedi ) then {
+// if (Lifeline_Scope == 4 || Lifeline_mod_dedi ) then {
+if (Lifeline_Scope == 4) then {
 	if !(Lifeline_mod_dedi) then {
-		[false] spawn Lifeline_StartActionMenu;
+		[false,Lifeline_PVPstatus] spawn Lifeline_StartActionMenu;
 	} else {
 		_player = _players select 0;
-		[true] remoteExec ["Lifeline_StartActionMenu", _player, true];
+		[true,Lifeline_PVPstatus] remoteExec ["Lifeline_StartActionMenu", _player, true];
 	};
 } else {
 	//============================ LOAD MAIN FILES =============================

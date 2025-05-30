@@ -1,7 +1,9 @@
 // if (isServer) then {
 
 	Lifeline_StartActionMenu = {
-		params ["_dedi"];
+		params ["_dedi","_pvpstatus"];
+
+		Lifeline_PVPstatus = _pvpstatus;
 
 		_firstrun = false;
 		Lifeline_MenuLoop = true;
@@ -42,7 +44,7 @@
 			_LLRtext = "Start LLR | DEDI ";
 			Lifeline_StartReviveBETA = true;
 			publicVariable "Lifeline_StartReviveBETA";
-			[] call Lifeline_TransmitPublicVariables;
+			// [] call Lifeline_TransmitPublicVariables; // not needed. Redundant.
 		};
 		_colour = "#bfc9ca";
 		_colourblue = "#009aff";
