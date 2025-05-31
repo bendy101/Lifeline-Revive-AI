@@ -99,6 +99,12 @@ Lifeline_Incapped = {
 		params ["_unit","_damage", "_non_handler"];	
 		sleep 5; 	
 
+		// Exit early if unit became null or dead during the 5 second delay (instant death scenarios)
+		if (isNull _unit || !alive _unit) exitWith {
+			if (Lifeline_Revive_debug) then {
+			};
+		};
+
 		_randanim = "";
 
 		//=== unconcious anim if Bandage Range is only 1

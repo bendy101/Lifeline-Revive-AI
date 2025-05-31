@@ -118,9 +118,9 @@ Lifeline_debug_ENDMISSION = true; // hardcore debug. END the mission important b
 		diag_log format ["!!!! Lifeline_Map_mark | %1 !!!!'", Lifeline_Map_mark];
 
 		diag_log format ["!!!! Lifeline_ACEcheck_ | %1 !!!!'", Lifeline_ACEcheck_];
-		diag_log format ["!!!! oldACE | %1 !!!!'", oldACE];
 		if (Lifeline_ACEcheck_ == true) then {
 			diag_log format ["!!!! aceversion | %1 !!!!'", aceversion];
+			diag_log format ["!!!! oldACE | %1 !!!!'", oldACE];
 			diag_log format ["!!!! Lifeline_ACE_Bandage_Method | %1 !!!!'", Lifeline_ACE_Bandage_Method];
 			diag_log format ["!!!! Lifeline_ACE_Blackout | %1 !!!!'", Lifeline_ACE_Blackout];
 			diag_log format ["!!!! Lifeline_ACE_BluFor | %1 !!!!'", Lifeline_ACE_BluFor];

@@ -333,41 +333,6 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 
 // }; // end isNil "oldACE"
 
-// PVP check
-/* if (isServer) then {
-    // Initialize PVP status on server
-    Lifeline_PVPstatus = false;
-    publicVariable "Lifeline_PVPstatus";
-    // Wait for at least one player to join
-    waitUntil {
-        sleep 1;
-        count (allPlayers - entities "HeadlessClient_F") > 0
-    };
-};
-
-if (hasInterface) then {
-
-	player setVariable ["Lifeline_Captive",(captive player),true]; //2025
-
-	playerSide1 = side group player; 
-	_currentSides = missionNamespace getVariable ["Lifeline_PVPcheckSides", []];
-	_currentSides pushBackUnique playerSide1;
-	missionNamespace setVariable ["Lifeline_PVPcheckSides", _currentSides, true];
-	enemyUnitsJa = allUnits select {[playerSide1, side group _x] call BIS_fnc_sideIsEnemy};
-	publicVariable "enemyUnitsJa";
-};
-
-// Update PVP status based on player sides
-if (isServer) then {
-    _playersides = missionNamespace getVariable ["Lifeline_PVPcheckSides", []];
-    if (count _playersides > 1) then {
-        Lifeline_PVPstatus = true;
-    } else {
-        Lifeline_PVPstatus = false;
-    };
-    publicVariable "Lifeline_PVPstatus";
-}; */
-
 //Detect PVP status if not defined (mission reload safety)
 Lifeline_PVPstatus = false;
 
