@@ -222,7 +222,7 @@
 						terminate Lifeline_MenuScript;
 						Lifeline_cancel = true;
 						// [] call LifelineremoveactionmenuIDs;
-						[_dedi] spawn Lifeline_StartActionMenu;
+						[_dedi,Lifeline_PVPstatus] spawn Lifeline_StartActionMenu;
 					},
 					[_dedi]
 					];
@@ -236,7 +236,7 @@
 						terminate Lifeline_MenuScript;
 						Lifeline_cancel = true;
 						// [] call LifelineremoveactionmenuIDs;
-						[_dedi] spawn Lifeline_StartActionMenu;
+						[_dedi,Lifeline_PVPstatus] spawn Lifeline_StartActionMenu;
 					},
 					[_dedi]
 					];
