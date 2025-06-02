@@ -241,9 +241,11 @@
 		// Lifeline_Process = Lifeline_Process - [_incap]; // TEMPUNCOMMENT
 		// publicVariable "Lifeline_Process";// TEMPUNCOMMENT
 
-		//this variables below are just for SOG AI to avoid clashes. 	
-		_incap setVariable ["isInjured",false,true]; 
-		// -------- 
+		// these is for SOG AI to avoid clashes. 
+		if (Lifeline_SOGAIcheck_) then {
+			_incap setVariable ["isInjured",false,true]; 
+			_incap call Lifeline_SOGAI_Continue;
+		}; 
 		_actionId = _incap getVariable "Lifeline_ActionMenuWounds";
 		if (!isNil "_actionId") then {
 		// if (!isNil "_actionId" && Lifeline_BandageLimit > 1) then {

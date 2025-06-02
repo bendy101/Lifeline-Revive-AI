@@ -21,6 +21,12 @@ ace_medical_ai_enabledFor = 0; // disable the ACE medical ai
 				};
 				_unit setVariable ["Lifeline_selfheal_progss",false,true]; //clear var if it was in middle of self healing
 
+				// these two variables below are just for SOG AI to avoid clashes. 
+				if (Lifeline_SOGAIcheck_) then {
+					_unit setVariable ["isInjured",true,true]; 
+					_unit call Lifeline_SOGAI_Break;
+				}; 
+
 				// ================= added the killed event handler
 				_unit addEventHandler ["Killed", {
 					params ["_unit2", "_killer2", "_instigator2", "_useEffects2"];									

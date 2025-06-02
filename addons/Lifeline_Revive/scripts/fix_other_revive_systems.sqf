@@ -264,6 +264,15 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 	if (BI_ReviveDetected_ == 0) then {
 	};
 
+	// set SOG_AI group
+	if (Lifeline_SOGAIcheck_) then {
+			[] spawn {
+			waitUntil {(!isNil "jboy_sogUnits")};
+			waitUntil {count jboy_sogUnits > 0};
+			Lifeline_SOGAI_Group = group (jboy_sogUnits select 0);
+		};
+	};
+
     // ==========DETECT MISSION TYPE WITH HINT AT START
 
 		 _text = ""; 

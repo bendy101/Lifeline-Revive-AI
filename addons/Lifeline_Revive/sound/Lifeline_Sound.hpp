@@ -93,6 +93,11 @@
 		name="mascalya";
 		sound[]={"Lifeline_Revive\sound\errormessages\mascal.ogg", 20, 1, 50};
 		titles[] = {};
+	};		
+	class boing	 {
+		name="boing";
+		sound[]={"Lifeline_Revive\sound\errormessages\boing.ogg", 20, 1, 50};
+		titles[] = {};
 	};	
 
 //===================== Dave		
