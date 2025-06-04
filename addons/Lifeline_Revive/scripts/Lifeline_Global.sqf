@@ -307,23 +307,24 @@ Lifeline_AutoCrouch = {
 	params ["_x","_crouchtrig"];
 	// _crouchtrig = _x getVariable ["Lifeline_crouchtrig",false];
 	// if (speed _x <= Lifeline_Idle_Crouch_Speed && stance _x == "STAND" && _crouchtrig == false && behaviour _x == "AWARE" && _x getVariable ["ReviveInProgress",0] == 0) then {
-	if (speed _x <= Lifeline_Idle_Crouch_Speed && stance _x != "PRONE" && _crouchtrig == false && behaviour _x == "AWARE" && _x getVariable ["ReviveInProgress",0] == 0) then {
-		_crouchtrig = true; 
-		if (stance _x != "CROUCH") then {
-			_x setUnitPos "MIDDLE";
+		if (speed _x <= Lifeline_Idle_Crouch_Speed && stance _x != "PRONE" && _crouchtrig == false && behaviour _x == "AWARE" && _x getVariable ["ReviveInProgress",0] == 0) then {
+			_crouchtrig = true; 
+			if (stance _x != "CROUCH") then {
+				_x setUnitPos "MIDDLE";
+			};
 		};
-	};
-	if ((speed _x > Lifeline_Idle_Crouch_Speed && _crouchtrig == true) || behaviour _x != "AWARE") then {
-		_crouchtrig = false;						
-		if (unitPos _x != "DOWN") then {
-			_x setUnitPos "AUTO";
+		if ((speed _x > Lifeline_Idle_Crouch_Speed && _crouchtrig == true) || behaviour _x != "AWARE") then {
+			_crouchtrig = false;						
+			if (unitPos _x != "DOWN") then {
+				_x setUnitPos "AUTO";
+			};
+		}; 
+	// if (speed _x == 0 && _crouchtrig == true && (behaviour _x == "COMBAT" || behaviour _x == "STEALTH" || (isPlayer (leader group _x) && stance (leader group _x) == "PRONE" && behaviour _x == "AWARE"))) then {
+	if (speed _x <= Lifeline_Idle_Crouch_Speed && _crouchtrig == true && (behaviour _x == "COMBAT" || behaviour _x == "STEALTH" || (isPlayer (leader group _x) && stance (leader group _x) == "PRONE" && behaviour _x == "AWARE"))) then {
+			_crouchtrig = false;
+			_x setUnitPos "DOWN";
+			_x setUnitPos "AUTO";  
 		};
-	}; 
-	if (speed _x == 0 && _crouchtrig == true && (behaviour _x == "COMBAT" || behaviour _x == "STEALTH" || (isPlayer (leader group _x) && stance (leader group _x) == "PRONE" && behaviour _x == "AWARE"))) then {
-		_crouchtrig = false;
-		_x setUnitPos "DOWN";
-		_x setUnitPos "AUTO";  
-	};
 	_x setVariable ["Lifeline_crouchtrig",_crouchtrig, true];
 };
 
@@ -1558,7 +1559,7 @@ Lifeline_StartRevive = {
 		_exitanim = false;
 
 		//teleport if not under 2 metres == EXPERIMENTAL
-		if (_medic distance2D _incap > 2) then {
+		if (_medic distance2D _incap > 1.5) then {
 			_newrevpos = [_incap, _medic, 0.8] call Lifeline_POSnexttoincap;
 			_medic setPos _newrevpos;
 			if (Lifeline_Revive_debug && Lifeline_debug_soundalert) then {
@@ -3113,6 +3114,8 @@ Lifeline_has_real_medic = {
 // Functions for SOGAI. Pause / continue special manoeuvres.
 Lifeline_SOGAI_Break = {
 	params ["_unit"];
+
+	// if (isNil "_unit") exitWith {};
 	if (missionNameSpace getVariable "jboy_pointUnit" isEqualTo _unit) then
 	{
 		missionNameSpace setVariable ["jboy_pointActive",false];
@@ -3133,6 +3136,9 @@ Lifeline_SOGAI_Break = {
 
 Lifeline_SOGAI_Continue = {
 	params ["_unit"];
+
+	// if (isNil "_unit") exitWith {};
+
  		private _blueDest = (_unit getVariable ["blueDest",getPos _unit]);
         if (missionNameSpace getVariable "leapfrogActive" and !isPlayer _unit) then
         {

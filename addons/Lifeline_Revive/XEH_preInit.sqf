@@ -244,7 +244,7 @@ New method: no weapon pulled out between bandages - but due to arma bugs - there
 '1 per Group + any not under fire' means 1 medic always per group, plus any other units not under fire.
  'fire' is supression > 0.1
 
-"], ["Lifeline Revive AI","MEDIC SELECTION"], [[0,1,2,3,4,5,6], ["Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
+"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["Any in scope (set above)", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
 ["Lifeline_Dedicated_Medic", "CHECKBOX", ["Always Use Vanilla Arma 3 Medic", "Always force the vanilla Arma 3 medic to be used.    
 	If you want only the vanilla Arma 3 medic in action, then set this to 'true' and choose '1' from 'Number of Medics' above.
 

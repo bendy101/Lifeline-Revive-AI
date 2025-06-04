@@ -12,6 +12,7 @@ diag_log "======================================================================
 diag_log "============================================================================================================='"; 
 
 Lifeline_mod = false;
+Lifeline_revive_enable = true;
 
 	//emulate the MOD version where CBA settings only exist if ACE is loaded or not. 
 	if (Lifeline_ACEcheck_ == false) then {

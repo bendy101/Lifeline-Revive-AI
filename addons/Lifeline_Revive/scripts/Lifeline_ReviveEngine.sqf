@@ -880,7 +880,7 @@ if (isServer) then {
 												_x setVariable ["isInjured",false,true]; 
 												_x call Lifeline_SOGAI_Continue;
 											}; 
-										        // -------------------- 
+								            // -------------------- 
 											// _x setVariable ["isMedic",false,true]; // keep off
 											// -------- 
 										};
@@ -1014,7 +1014,7 @@ if (isServer) then {
 
 		Lifeline_incaps2choose = Lifeline_incapacitated select {!(_x in Lifeline_Process) && (lifestate _x == "INCAPACITATED") && (rating _x > -2000)};
 
-		_diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; 
+		// _diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; 
 
 		if (count Lifeline_incaps2choose > 0 ) then {
 
@@ -1059,8 +1059,6 @@ if (isServer) then {
 				};
 			};
 
-
-
 			_incap_side = side group _incap; 
 
 			if (Lifeline_Revive_debug) then {[_incap,"SELECTED INCAP"] call serverSide_unitstate};
@@ -1070,12 +1068,10 @@ if (isServer) then {
 			// ======================== SELECT MEDIC UNIT ================================
 			// ======================== SELECT MEDIC UNIT ================================
 			// ======================== SELECT MEDIC UNIT ================================
-
 		 	//Lifeline_healthy_units = Lifeline_All_Units - Lifeline_incapacitated;
 
 			// Check if medic limit is reached. 
 			_medic_under_limit = true;
-
 
 			_medic_under_limit = [_incap,false] call Lifeline_Medic_Num_Limit;
 			_dedicated_medic = false;
@@ -1091,10 +1087,9 @@ if (isServer) then {
 			{
 				// _blacklist = _x call Lifeline_Blacklist_Check;
 				if (
-
 					(!Lifeline_Dedicated_Medic || (Lifeline_Dedicated_Medic && (_x getUnitTrait "medic" || _dedi_in_action || !_dedi_medic_available))) &&
-					_medic_under_limit &&
-					[_x,_incap] call Lifeline_check_available_medic
+					_medic_under_limit
+					 && [_x,_incap] call Lifeline_check_available_medic
 				) then {
 					Lifeline_medics2choose pushBackUnique _x;
 				};
@@ -1102,11 +1097,7 @@ if (isServer) then {
 
 			// } foreach Lifeline_medicsMASCALcheck;
 			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-			_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics2choose; 
-
-           	// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
-            // _Lifeline_medicsMASCALcheck = Lifeline_medicsMASCALcheck select {(side group _x) == (_incap_side)};
-			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach _Lifeline_medicsMASCALcheck; 
+			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics2choose; 
 
 			_voice = "";
 
@@ -1116,31 +1107,37 @@ if (isServer) then {
 				// 1. First sort all medics by distance
 				Lifeline_medics = [Lifeline_medics2choose, [], {_incap distance _x}, "ASCEND"] call BIS_fnc_sortBy;
 
-				// 2. Create an array of all groups in sorted order
-				_medicGroups = [];
-				{
-					_grp = group _x;
-					if !(_grp in _medicGroups) then {
-						_medicGroups pushBack _grp;
-					};
-				} forEach Lifeline_medics;
+				if (Lifeline_Medic_Limit > -1) then {
 
-				// 3. Create a new sorted array, processing each group's members by suppression
-				_sortedMedics = [];
-				{
-					_currentGroup = _x;
-					// Get all medics from current group
-					_groupMedics = Lifeline_medics select {group _x == _currentGroup};
-					// Sort them by suppression
-					_groupMedics = [_groupMedics, [], {getSuppression _x}, "ASCEND"] call BIS_fnc_sortBy;
-					// Add them to final array
-					_sortedMedics append _groupMedics;
-				} forEach _medicGroups;
+					// 2. Create an array of all groups in sorted order
+					_medicGroups = [];
+					{
+						_grp = group _x;
+						if !(_grp in _medicGroups) then {
+							_medicGroups pushBack _grp;
+						};
+					} forEach Lifeline_medics;
 
-				// Update the Lifeline_medics array with our new sorted order
-				Lifeline_medics = _sortedMedics;
+					// 3. Create a new sorted array, processing each group's members by suppression
+					_sortedMedics = [];
+					{
+						_currentGroup = _x;
+						// Get all medics from current group
+						_groupMedics = Lifeline_medics select {group _x == _currentGroup};
+						// Sort them by suppression
+						_groupMedics = [_groupMedics, [], {getSuppression _x}, "ASCEND"] call BIS_fnc_sortBy;
+						// Add them to final array
+						_sortedMedics append _groupMedics;
+					} forEach _medicGroups;
 
-				_arraynum = 0;
+					// Update the Lifeline_medics array with our new sorted order
+					Lifeline_medics = _sortedMedics;
+
+				};
+
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics; 
+
+				// _arraynum = 0;
 				_numMedics = count Lifeline_medics;
 				_arraynum = [0]; // MAKE IT ALWAYS CLOSEST
 				_medic = Lifeline_medics select (selectRandom _arraynum);
@@ -1193,9 +1190,8 @@ if (isServer) then {
 
 				Lifeline_medicsMASCALcheck = Lifeline_healthy_units select {(side group _x) == (_incap_side) && [_x,_incap] call Lifeline_check_medics_MASCAL};
 				Lifeline_medicsMASCALcheckTOTAL = (Lifeline_All_Units - Lifeline_incapacitated) select {(side group _x) == (_incap_side) && [_x,_incap] call Lifeline_check_medics_MASCAL};
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
-
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
 
 				//Check if GROUP MASCAL  
 				if (count Lifeline_medicsMASCALcheck == 0) then {
@@ -1268,8 +1264,7 @@ if (isServer) then {
 					_incap setVariable ["isInjured",false,true]; 
 					_incap call Lifeline_SOGAI_Continue;
 				};  */
-            			// -------------------- 
-
+            	// -------------------- 
 
 				_medic = objNull;
 			};
@@ -1338,7 +1333,7 @@ if (isServer) then {
 					//these two variables below are just for SOG AI to avoid clashes. 
 					// _incap setVariable ["isInjured",true,true]; 
 					// _medic setVariable ["isMedic",true,true]; 
-
+                    // // -------- 
 					// these two variables below are just for SOG AI to avoid clashes. 
 					if (Lifeline_SOGAIcheck_) then {
 						_incap setVariable ["isInjured",true,true]; 
