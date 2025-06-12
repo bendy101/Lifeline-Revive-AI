@@ -335,7 +335,8 @@ if (isNil "oldACE" && Lifeline_remove_3rd_pty_revive == false) then {
 		 if (_text != "") then { 		  	
 			// _textformat = format ["<t align='right' size='%3' color='#%1'>%2</t>",_colour,_text, 0.6];
 			_textformat = format ["<t align='right' size='0.4' color='#%1'>%2<br /><t align='right' size='%4' color='#%1'>%3</t>",_colour,_modtext, _text, 0.6]; 
-			_ypos = 1.3;_sec = 60;
+			_ypos = 1.3;_sec = 30;
+			// _ypos = 1.3;_sec = 3;
 			[_textformat,_ypos,_sec,Lifelinetxt2Layer] remoteExec ["Lifeline_display_textright", allplayers]; 
 		 };
 		}; // if (hasInterface) then {

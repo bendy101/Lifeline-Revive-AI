@@ -377,7 +377,8 @@ if (isServer) then {
 				// add death event handler 
 				_x addMPEventHandler ["MPKilled", {
 						params ["_unit", "_killer", "_instigator", "_useEffects"];	
-						[[_unit],"killed EH [320] _Global.sqf"] call Lifeline_reset2;
+						_unit setVariable ["lifeline_loadout",getUnitLoadout _unit,false];
+						[[_unit],"killed EH [461] _Global.sqf"] call Lifeline_reset2;
 						if (Lifeline_Revive_debug && Lifeline_PVPstatus == false && Lifeline_Include_OPFOR == true && (side group _X) in Lifeline_OPFOR_Sides) then {
 							if (Lifeline_RevProtect == 1) then {
 								if (Lifeline_debug_soundalert && Lifeline_soundalert_died) then {["memberdied1"] remoteExec ["playSound",0];};

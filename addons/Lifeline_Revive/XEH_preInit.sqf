@@ -244,7 +244,7 @@ New method: no weapon pulled out between bandages - but due to arma bugs - there
 '1 per Group + any not under fire' means 1 medic always per group, plus any other units not under fire.
  'fire' is supression > 0.1
 
-"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["Any in scope (set above)", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
+"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["No Limits. Any in scope (set above)", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
 ["Lifeline_Dedicated_Medic", "CHECKBOX", ["Always Use Vanilla Arma 3 Medic", "Always force the vanilla Arma 3 medic to be used.    
 	If you want only the vanilla Arma 3 medic in action, then set this to 'true' and choose '1' from 'Number of Medics' above.
 
@@ -298,6 +298,7 @@ if (Lifeline_ACEcheck_ == true) then {
 if (Lifeline_ACEcheck_ == false) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
 ["Lifeline_Hotwire", "CHECKBOX", ["Hotwire Locked Vehicles with Toolkit", "Vehicles you cannot access can now be unlocked.\nHotwire them with toolkit.\nIf the vehicle is enclosed, then you need to break in first.\nDoes not apply to armoured units.\n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_ExplSpec", "CHECKBOX", ["Make all your units Explosive Specialists", "It is frustrating when you accidently plant a bomb then cannot undo it.\nThis fixes that.\n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
+["Lifeline_ReloadLoadout", "CHECKBOX", ["Keep Gear on Respawn", "All the kit and gear that a unit previously had is reloaded on respawn. \n\n*Only for respawn missions.  \n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_Idle_Crouch", "CHECKBOX", ["Idle Crouch", "When a unit is standing and idle, it will temporarily go into a 'crouch'.\nThis only applies to 'aware' behaviour mode.\n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], true,true] call CBA_fnc_addSetting;
 ["Lifeline_Idle_Crouch_Speed", "SLIDER",   ["Idle Crouch 'Idle' Threshold",   "For the Idle Crouch, this determinds what speed\na unit is moving to be considered 'idle'\n0 for dead still, and 1-5 for 'very slow' to 'slow'\n\n"], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], [0, 5, 3, 0],true,{Lifeline_Idle_Crouch_Speed = round Lifeline_Idle_Crouch_Speed}] call CBA_fnc_addSetting;
 if (Lifeline_ACEcheck_ == true) then {["Lifeline_ACE_BluFor", "LIST",     ["Only Show ACE Blufor Tracker with GPS",     
@@ -320,6 +321,9 @@ if (Lifeline_SOGAIcheck_ == true) then {
 };
 
 ["Lifeline_remove_3rd_pty_revive", "CHECKBOX", ["Remove Other Revive Systems Before Mission", "Uncheck this if you want the choice of cancelling Lifeline Revive in the mission.\nNot the best method however, its better to disable mod and restart mission (not restart Arma 3).\nDo this by unchecking 'ENABLE Lifeline Revive' and restarting mission.\n\n"], ["Lifeline Revive AI","~MISC"], true,true] call CBA_fnc_addSetting;
+
+["Lifeline_PreventAIRespawn", "CHECKBOX", ["Prevent AI from Respawning", "Some missions in the workshop are too easy,\nyour AI always respawns when killed. \nThis will prevent them from respawning. \n\n* Only for respawn missions.\n\n"], ["Lifeline Revive AI","~MISC"], false,true] call CBA_fnc_addSetting;
+
 ["Lifeline_hintsilent", "CHECKBOX", ["Debug Hints", "Debug Hints. Using BI 'hinstsilent'"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
 ["Lifeline_debug_soundalert", "CHECKBOX", ["Error Sound Alerts", "Sound Alerts when there is a bug."], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;
 ["Lifeline_HUD_names_pairtime", "CHECKBOX", ["pair timer for HUD list of units", "incl time for pairs in HUD list of incapped units and medics"], ["Lifeline Revive AI","~~DEBUG"], false,true] call CBA_fnc_addSetting;

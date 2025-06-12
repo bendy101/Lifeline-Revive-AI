@@ -17,9 +17,17 @@ if (Lifeline_ACEcheck_ == true) then {
 {
 	_x addMPEventHandler ["MPRespawn", {
 		params ["_unit"];
-		if (!isPlayer _unit) exitWith {
-			deleteVehicle _unit
+
+		if (Lifeline_ReloadLoadout) then {
+			_unit setUnitLoadout (_unit getVariable "lifeline_loadout");
 		};
+
+		if (!isPlayer _unit) exitWith {
+			if (Lifeline_PreventAIRespawn) then {
+				deleteVehicle _unit
+			};
+		};
+
 		// Lifeline_All_Units = Lifeline_All_Units + [_unit];
 		Lifeline_All_Units pushBackUnique _unit;
 		// Lifeline_incapacitated = Lifeline_incapacitated - [_unit];
@@ -40,7 +48,9 @@ if (Lifeline_ACEcheck_ == true) then {
 		//remove wounds action ID
 		if (Lifeline_RevMethod == 2) then {
 			_actionId = _unit getVariable ["Lifeline_ActionMenuWounds",false]; 
-			[_unit,_actionId] remoteExec ["removeAction",_unit];
+			if (_actionId != false) then {
+				[_unit,_actionId] remoteExec ["removeAction",_unit];
+			};
 			_unit setVariable ["Lifeline_RevActionAdded",false,true];
 		};
 
