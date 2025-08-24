@@ -210,7 +210,9 @@ if (isServer) then {
 
 	//slots, or playable slots only needs to be set once.
 	// if (Lifeline_Scope == 2) then {
-		Lifeline_Slots = allunits select {((_x in playableUnits) || (_x in switchableUnits)) && simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};
+			Lifeline_Slots = allunits select {((_x in playableUnits) || (_x in switchableUnits)) && simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"
+	&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+	};
 		publicVariable "Lifeline_Slots";
 	// };
 
@@ -233,20 +235,29 @@ if (isServer) then {
 		if (Lifeline_PVPstatus) then {
 				// GROUP
 				if (Lifeline_Scope in [1,2]) then {
-					Lifeline_All_Units = allunits select {{isPlayer _x} count (units group _x) > 0 && simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};				
+					Lifeline_All_Units = allunits select {{isPlayer _x} count (units group _x) > 0 && simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase" 
+					// && isDamageAllowed _x 
+					&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+					};				
 					// Lifeline_All_Units = Lifeline_Living_Units select {{isPlayer _x} count (units group _x) > 0};				
 				};
 				// PLAYABLE SLOTS
 				if (Lifeline_Scope == 2) then {_slots = Lifeline_Slots select {alive _x}; {Lifeline_All_Units pushBackUnique _x} forEach _slots}; // do I even need to check if alive?
 				// SIDE	
-				if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"}};
+				if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"
+				// && isDamageAllowed _x
+				&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+				}};
 				// if (Lifeline_Scope == 3) then {Lifeline_All_Units = Lifeline_Living_Units};
 		};
 
 		if (!Lifeline_PVPstatus) then {
 			if (Lifeline_Include_OPFOR) then {
 
-				Lifeline_Living_Units = allunits select {simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};
+				Lifeline_Living_Units = allunits select {simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"
+				// && isDamageAllowed _x
+				&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+				};
 				// GROUP
 				if (Lifeline_Scope in [1,2]) then {
 					// Lifeline_All_UnitBluFor = allunits select {{isPlayer _x} count (units group _x) > 0 && simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};
@@ -266,13 +277,19 @@ if (isServer) then {
 			if (!Lifeline_Include_OPFOR) then {
 				// GROUP
 				if (Lifeline_Scope in [1,2]) then {
-					Lifeline_All_Units = allunits select {{isPlayer _x} count (units group _x) > 0 && side (group _x) == Lifeline_Side && simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};
+					Lifeline_All_Units = allunits select {{isPlayer _x} count (units group _x) > 0 && side (group _x) == Lifeline_Side && simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"
+					// && isDamageAllowed _x
+					&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+					};
 					// Lifeline_All_Units = Lifeline_Living_Units select {{isPlayer _x} count (units group _x) > 0 && side (group _x) == Lifeline_Side};
 				};
 				// PLAYABLE SLOTS
 				if (Lifeline_Scope == 2) then {_slots = Lifeline_Slots select {alive _x && side (group _x) == Lifeline_Side};{Lifeline_All_Units pushBackUnique _x} forEach _slots}; // do I even need to check if alive?				
 				// SIDE	
-				if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {side (group _x) == Lifeline_Side && simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"}};
+				if (Lifeline_Scope == 3) then {Lifeline_All_Units = allunits select {side (group _x) == Lifeline_Side && simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"
+				// && isDamageAllowed _x
+				&& (isDamageAllowed _x || !isDamageAllowed _x && (lifestate _x == "INCAPACITATED" || _x getVariable ["ReviveInProgress",0] != 0))
+				}};
 				// if (Lifeline_Scope == 3) then {Lifeline_All_Units = Lifeline_Living_Units select {side (group _x) == Lifeline_Side}};
 			};	
 		};
