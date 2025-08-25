@@ -84,7 +84,12 @@
 			Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
 			publicVariable "Lifeline_OPFOR_Sides"; // THIS IS AN ARRAY OF ENEMY SIDES
 
-			Lifeline_Living_Units = allunits select {simulationEnabled _x && isDamageAllowed _x && rating _x > -2000 && _x isKindOf "CAManBase"};
+			Lifeline_Living_Units = allunits select {simulationEnabled _x && rating _x > -2000 && _x isKindOf "CAManBase"};
+
+			if (Lifeline_Exclude_Invincible) then {
+				Lifeline_Living_Units = Lifeline_Living_Units select {isDamageAllowed _x};
+			};
+
 			publicVariable "Lifeline_living_Units";
 			_groupsWPlayers = allGroups select {{isPlayer _x} count (units _x) > 0 }; 
 

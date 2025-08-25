@@ -41,6 +41,7 @@ Lifeline_revive_enable = true;
 	Lifeline_RevMethod = 2; 
 	Lifeline_hintsilent = true;
 	Lifeline_debug_soundalert = true;
+	Lifeline_Exclude_Invincible = true;
 
 	Lifeline_SOGAI_orangetrian = false; // SOG AI 
 
@@ -129,4 +130,5 @@ Lifeline_revive_enable = true;
 	publicVariable "Lifeline_Revive_debug";
 	publicVariable "Lifeline_version";
 	publicVariable "Lifeline_cntdwn_disply";
+	publicVariable "Lifeline_Exclude_Invincible";
 

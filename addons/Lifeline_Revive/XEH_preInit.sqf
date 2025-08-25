@@ -244,7 +244,7 @@ New method: no weapon pulled out between bandages - but due to arma bugs - there
 '1 per Group + any not under fire' means 1 medic always per group, plus any other units not under fire.
  'fire' is supression > 0.1
 
-"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["No Limits. Any in scope (set above)", "Any in group", "1 per group", "2 per group", "3 per group", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
+"], ["Lifeline Revive AI","MEDIC SELECTION"], [[-1,0,1,2,3,4,5,6], ["No Limits. Any in scope (set above)", "Any in group (squad)", "1 per group (squad)", "2 per group (squad)", "3 per group (squad)", "1 per group + any not under fire", "2 per group + any not under fire", "3 per group + any not under fire"], 0],true] call CBA_fnc_addSetting;
 ["Lifeline_Dedicated_Medic", "CHECKBOX", ["Always Use Vanilla Arma 3 Medic", "Always force the vanilla Arma 3 medic to be used.    
 	If you want only the vanilla Arma 3 medic in action, then set this to 'true' and choose '1' from 'Number of Medics' above.
 
@@ -293,6 +293,8 @@ if (Lifeline_ACEcheck_ == true) then {
 };
 
 ["Lifeline_EnemyCloseByType", "LIST",     ["Medic Hit the Dirt",     "1 = When enemy is nearby < 500m\n2 = When enemy is is view < 500m\n3 = Random of above options\n\n"], ["Lifeline Revive AI","_MAIN"], [[1, 2, 3], ["When enemy is nearby < 500m","When enemy is is view < 500m", "Random (either options)"], 0]] call CBA_fnc_addSetting;
+
+["Lifeline_Exclude_Invincible", "CHECKBOX", ["Exclude Invincible Units", "Exclude units with damage disabled (isDamageAllowed = false) from revive system.\nSome missions do not specify NPCs clearly = they just have them set to 'invincible'\nNPCs are units part of the story and not playable, we dont want them in revive system.\n Turn this off to save a bit of CPU. Turn on for missions with NPCs badly designed, ie, only set to invincible. Most of the time you do not need this on.\n\n"], ["Lifeline Revive AI","~MISC"], false,true] call CBA_fnc_addSetting;
 
     //~BONUS. Unrelated to revive but useful
 if (Lifeline_ACEcheck_ == false) then {["Lifeline_Fatigue", "LIST",     ["Fatigue",  "Force Fatigue Settings."], ["Lifeline Revive AI","~BONUS. Unrelated to revive but useful"], [[0,1,2], ["Mission Settings","Enabled", "Disabled"], 0],true] call CBA_fnc_addSetting};
