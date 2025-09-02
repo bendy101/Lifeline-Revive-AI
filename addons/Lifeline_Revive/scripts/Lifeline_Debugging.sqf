@@ -193,10 +193,6 @@ Lifeline_debug_unit_states = {
 
 								if (Lifeline_hintsilent) then {hintsilent format ["BUG %1\n%2", name _x,_diagtext]};
 								if (Lifeline_debug_soundalert) then {["invincible_or_captive"] remoteExec ["playSound",Debug_to];};
-								if (Lifeline_debug_ENDMISSION) then {
-									if (captive _x == true) then {failMission "captivebug"; };
-									if (isDamageAllowed _x == false) then {failMission "damagebug"; };
-								};
 								// = HACKFIX 
 								// _captive = _x getVariable ["Lifeline_Captive", false];
 								// if !(local _x) then {									
